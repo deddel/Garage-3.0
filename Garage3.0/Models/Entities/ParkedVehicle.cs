@@ -23,5 +23,8 @@ namespace Garage3._0.Models.Entities
         [Range(0, 100, ErrorMessage = "It must be a non-negative number.")]
         public int Wheel { get; set; }
         public DateTime ArrivalTime { get; set; }
+
+        //Foreign Key
+        public ApplicationUser ApplicationUserID { get; set; }
     }
 }

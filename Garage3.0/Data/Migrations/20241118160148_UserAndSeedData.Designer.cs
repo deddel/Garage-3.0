@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241118145149_ImportedOld")]
-    partial class ImportedOld
+    [Migration("20241118160148_UserAndSeedData")]
+    partial class UserAndSeedData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,10 @@ namespace Garage3._0.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserIDId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("ArrivalTime")
                         .HasColumnType("datetime2");
@@ -60,42 +64,9 @@ namespace Garage3._0.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ParkedVehicle");
+                    b.HasIndex("ApplicationUserIDId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ArrivalTime = new DateTime(2018, 8, 18, 7, 22, 15, 0, DateTimeKind.Unspecified),
-                            Brand = "Benz",
-                            Color = "Blue",
-                            RegistrationNumber = "ERT987",
-                            VehicleModel = "280s",
-                            VehicleType = 3,
-                            Wheel = 4
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ArrivalTime = new DateTime(2012, 7, 19, 8, 29, 23, 0, DateTimeKind.Unspecified),
-                            Brand = "Volvo",
-                            Color = "Red",
-                            RegistrationNumber = "KDR536",
-                            VehicleModel = "142",
-                            VehicleType = 3,
-                            Wheel = 4
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ArrivalTime = new DateTime(2011, 5, 23, 9, 42, 17, 0, DateTimeKind.Unspecified),
-                            Brand = "Honda",
-                            Color = "Green",
-                            RegistrationNumber = "LDT432",
-                            VehicleModel = "CGI",
-                            VehicleType = 4,
-                            Wheel = 2
-                        });
+                    b.ToTable("ParkedVehicle");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -162,6 +133,11 @@ namespace Garage3._0.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -213,6 +189,10 @@ namespace Garage3._0.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator().HasValue("IdentityUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -300,6 +280,40 @@ namespace Garage3._0.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Garage3._0.Models.Entities.ApplicationUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("FName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SocialSecurityNr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
+            modelBuilder.Entity("Garage3._0.Models.Entities.ParkedVehicle", b =>
+                {
+                    b.HasOne("Garage3._0.Models.Entities.ApplicationUser", "ApplicationUserID")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("ApplicationUserIDId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUserID");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -349,6 +363,11 @@ namespace Garage3._0.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Garage3._0.Models.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }
