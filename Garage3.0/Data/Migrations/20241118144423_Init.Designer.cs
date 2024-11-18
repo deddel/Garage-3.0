@@ -4,6 +4,7 @@ using Garage3._0.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241118144423_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,41 +61,6 @@ namespace Garage3._0.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ParkedVehicle");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ArrivalTime = new DateTime(2018, 8, 18, 7, 22, 15, 0, DateTimeKind.Unspecified),
-                            Brand = "Benz",
-                            Color = "Blue",
-                            RegistrationNumber = "ERT987",
-                            VehicleModel = "280s",
-                            VehicleType = 3,
-                            Wheel = 4
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ArrivalTime = new DateTime(2012, 7, 19, 8, 29, 23, 0, DateTimeKind.Unspecified),
-                            Brand = "Volvo",
-                            Color = "Red",
-                            RegistrationNumber = "KDR536",
-                            VehicleModel = "142",
-                            VehicleType = 3,
-                            Wheel = 4
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ArrivalTime = new DateTime(2011, 5, 23, 9, 42, 17, 0, DateTimeKind.Unspecified),
-                            Brand = "Honda",
-                            Color = "Green",
-                            RegistrationNumber = "LDT432",
-                            VehicleModel = "CGI",
-                            VehicleType = 4,
-                            Wheel = 2
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

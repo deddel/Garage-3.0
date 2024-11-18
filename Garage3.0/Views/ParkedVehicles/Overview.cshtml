@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Garage3._0.Models.ViewModels.ParkedViewModel>
+
+@{
+    ViewData["Title"] = "Overview";
+    var successMessage = TempData["SuccessMessage"] as string;
+    var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success">
+        @successMessage
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+
+<h1>Overview</h1>
+
+<p>
+    <a asp-action="Park" class="regular-button">Park New Vehicle</a>
+</p>
+
+<form asp-action="Filter2" method="get">
+    <div class="input-group mb-3">
+        <div class="input-group-append">
+            <select class="form-control" name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()">
+                <option selected="selected" value="">Any Vehicle</option>
+            </select>
+        </div>
+        <input type="text" class="form-control" name="regNr" placeholder="Registration number..." />
+        <input type="date" class="form-control" name="arrivalTime" placeholder="Arrival Time..." />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</form>
+
+<table class="table overview-table">
+    <thead>
+        <tr>
+            <th>
+                @Html.ActionLink("Vehicle Type", "Overview", new { sortOrder = ViewBag.TypeSortParm })
+            </th>
+
+            <th>
+                @Html.ActionLink("Registration Number", "Overview", new { sortOrder = ViewBag.RegSortParm })
+            </th>
+
+            <th>
+                @Html.ActionLink("Arrival Time", "Overview", new { sortOrder = ViewBag.ArrivalTimeSortParm })
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.ParkedTime)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegistrationNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ArrivalTime)
+            </td>
+
+            <td>
+                @ParkingHelper.FormatTimeSpan(item.ParkedTime)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="ReceiptView" asp-route-id="@item.Id">Checkout</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

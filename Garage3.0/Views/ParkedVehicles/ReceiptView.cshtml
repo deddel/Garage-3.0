@@ -1,0 +1,84 @@
+﻿@model Garage3._0.Models.ViewModels.ReceiptViewModel
+
+@{
+    ViewData["Title"] = "ReceiptView";
+}
+
+<h1>Checkout</h1>
+
+<div>
+    <div id="print-this" style="background-color: black;">
+        <h4>Receipt</h4>
+        <hr />
+        <dl class="row">
+            <dt class = "col-sm-4">
+                Registration Number
+            </dt>
+            <dd class = "col-sm-8">
+                @Html.DisplayFor(model => model.RegistrationNumber)
+            </dd>
+            <dt class = "col-sm-4">
+                Arrival Time
+            </dt>
+            <dd class = "col-sm-8">
+                @Html.DisplayFor(model => model.ArrivalTime)
+            </dd>
+            <dt class = "col-sm-4">
+                Departure Time
+            </dt>
+            <dd class = "col-sm-8">
+                @Html.DisplayFor(model => model.DepartureTime)
+            </dd>
+            <dt class = "col-sm-4">
+                Parked Time
+            </dt>
+            <dd class="col-sm-8">
+                @ParkingHelper.FormatTimeSpan(Model.ParkedTime)
+            </dd>
+            <dt class = "col-sm-4">
+                Parking Fee
+            </dt>
+            <dd class = "col-sm-8">
+                @Html.DisplayFor(model => model.ParkedFee) <span>KR</span>
+            </dd>
+        </dl>
+    </div>
+
+     <form asp-action="Delete" asp-controller="ParkedVehicles" method="post" id="printAndUnparkForm">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Unpark" class="btn btn-danger" />
+        <button type="button" onclick="PrintAndUnpark()" class="btn btn-warning">Unpark and Print Receipt</button>
+        <a asp-action="Overview" class="btn btn-primary">Back to garage</a>
+       
+    </form>
+</div>
+
+<script>
+
+    // Generate the PDF
+    function generatePDF() {
+        const elementToPrint = document.getElementById('print-this');
+        
+        //Include timestamp in filename
+        const now = new Date();
+        const time = now.toISOString().replace(/[-:.]/g, "");
+        const filename = `receipt_${time}.pdf`;
+
+        return html2pdf(elementToPrint, {
+            margin: 1,
+            filename: filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        });
+    }
+
+    async function PrintAndUnpark() {
+        
+        await generatePDF();
+        
+        // Submit the form after PDF generation
+        document.getElementById('printAndUnparkForm').submit();
+    }
+	
+</script>
