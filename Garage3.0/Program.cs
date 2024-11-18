@@ -2,6 +2,7 @@ using Garage3._0.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Garage3._0
 {
     public class Program
