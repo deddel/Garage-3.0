@@ -11,6 +11,7 @@ using Garage3._0.Helper;
 using Garage3._0.Models.ViewModels;
 using Microsoft.IdentityModel.Tokens;
 
+
 namespace Garage3._0.Controllers
 {
     public class ParkedVehiclesController : Controller
@@ -87,7 +88,7 @@ namespace Garage3._0.Controllers
 
             var filtered = type is null ?
                 _context.ParkedVehicle :
-                _context.ParkedVehicle.Where(m => (int)m.VehicleType == type);
+                _context.ParkedVehicle.Where(m => m.VehicleType.Id == type);
 
             filtered = string.IsNullOrWhiteSpace(regNr) ?
                 filtered :
@@ -135,7 +136,7 @@ namespace Garage3._0.Controllers
 
             filtered = type is null ?
                filtered :
-               filtered.Where(m => (int)m.Type == type);
+               filtered.Where(m => m.Type.Id == type);
 
             filtered = string.IsNullOrWhiteSpace(regNr) ?
                 filtered :
@@ -153,58 +154,74 @@ namespace Garage3._0.Controllers
             return View(nameof(Overview), await filtered.ToListAsync());
         }
 
-        public async Task<IActionResult> StatisticsView()
-        {
-            var parkedVehicles = await _context.ParkedVehicle.Select(p => new StatisticsViewModel
-            {
-                Wheel = p.Wheel,
-                Color = p.Color,
-                Brand = p.Brand,
-                Model = p.VehicleModel,
-                Type = p.VehicleType,
-                ParkingFee = ParkingHelper.ParkingFee(p.ArrivalTime, DateTime.Now)
-            })
-            .ToListAsync();
+        //public async Task<IActionResult> StatisticsView()
+        //{
+        //    var vehicleTypes = await _context.VehicleType.ToListAsync();
+        //    var parkedVehicles = await _context.ParkedVehicle.Select(p => new 
+        //    {
+        //        Wheel = p.Wheel,
+        //        Color = p.Color,
+        //        Brand = p.Brand,
+        //        Model = p.VehicleModel,
+        //        Type = p.VehicleType.VehicleTypeName,
+        //        ParkingFee = ParkingHelper.ParkingFee(p.ArrivalTime, DateTime.Now)
+        //    })
+        //    .ToListAsync();
 
-            var type = parkedVehicles.GroupBy(p => p.Type);
-            string cars = "0";
-            string boats = "0";
-            string motorcycles = "0";
-            string buses = "0";
-            string airplanes = "0";
-            foreach (var t in type)
-            {
-                if (t.Key == VehicleType.Car)
-                    cars = $"{t.Count()}";
-                else if (t.Key == VehicleType.Boat)
-                    boats = $"{t.Count()}";
-                else if (t.Key == VehicleType.Motorcycle)
-                    motorcycles = $"{t.Count()}";
-                else if (t.Key == VehicleType.Bus)
-                    buses = $"{t.Count()}";
-                else
-                    airplanes = $"{t.Count()}";
-            }
-            int amountWheels = parkedVehicles.Sum(s => s.Wheel);
-            decimal sum = 0;
-            foreach (var s in parkedVehicles)
-            {
-                sum += s.ParkingFee;
-            }
+        //    var typeCounts = parkedVehicles
+        //        .GroupBy(p => p.Type)
+        //        .ToDictionary(g => g.Key, g => g.Count());
 
-            var displayStats = new StatisticsDisplayViewModel
-            {
-                Cars = cars,
-                Boats = boats,
-                Buses = buses,
-                Motorcycles = motorcycles,
-                Airplanes = airplanes,
-                Wheels = amountWheels,
-                Sum = sum
-            };
+        //    var vehicleTypeCounts = vehicleTypes.ToDictionary(
+        //        vt => vt.VehicleTypeName,
+        //        vt => typeCounts.GetValueOrDefault(vt.VehicleTypeName, 0).ToString());
 
-            return View(displayStats);
-        }
+        //    //var type = parkedVehicles.GroupBy(p => p.Type);
+        //    //string cars = "0";
+        //    //string boats = "0";
+        //    //string motorcycles = "0";
+        //    //string buses = "0";
+        //    //string airplanes = "0";
+        //    //foreach (var t in type)
+        //    //{
+        //    //    if (t.Key == VehicleTypes.)
+        //    //        cars = $"{t.Count()}";
+        //    //    else if (t.Key == VehicleType.Boat)
+        //    //        boats = $"{t.Count()}";
+        //    //    else if (t.Key == VehicleType.Motorcycle)
+        //    //        motorcycles = $"{t.Count()}";
+        //    //    else if (t.Key == VehicleType.Bus)
+        //    //        buses = $"{t.Count()}";
+        //    //    else
+        //    //        airplanes = $"{t.Count()}";
+        //    //}
+        //    int amountWheels = parkedVehicles.Sum(s => s.Wheel);
+        //    decimal sum = 0;
+        //    foreach (var s in parkedVehicles)
+        //    {
+        //        sum += s.ParkingFee;
+        //    }
+
+        //    var displayStats = new StatisticsDisplayViewModel
+        //    {
+        //        Cars = vehicleTypeCounts.GetValueOrDefault("Car", "0"),
+        //        Boats = vehicleTypeCounts.GetValueOrDefault("Boat", "0"),
+        //        Buses = vehicleTypeCounts.GetValueOrDefault("Bus", "0"),
+        //        Motorcycles = vehicleTypeCounts.GetValueOrDefault("Motorcycle", "0"),
+        //        Airplanes = vehicleTypeCounts.GetValueOrDefault("Airplane", "0"),
+        //        Wheels = amountWheels,
+        //        Sum = sum
+        //        //Cars = cars,
+        //        //Boats = boats,
+        //        //Buses = buses,
+        //        //Motorcycles = motorcycles,
+        //        //Airplanes = airplanes,
+        //        //Wheels = amountWheels,
+        //        //Sum = sum
+        //    };
+
+        //    return View(displayStats);
+        //}
 
         public async Task<IActionResult> Overview(string sortOrder)
         {
