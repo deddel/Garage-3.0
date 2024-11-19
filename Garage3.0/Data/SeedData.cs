@@ -66,7 +66,6 @@ namespace Garage3._0.Data
                 UserName = accountEmail,
                 Email = accountEmail,
                 EmailConfirmed = true,
-                Password = pw,
                 FName = fName,
                 LName = lName,
                 SocialSecurityNr = socialSecurityNr
