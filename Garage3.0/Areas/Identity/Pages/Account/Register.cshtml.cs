@@ -106,6 +106,12 @@ namespace Garage3._0.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "Last name")]
             public string LName { get; set; }
+
+            [Required]
+            [Display(Name = "Last name")]
+            public string SocialSecurityNr { get; set; }
+
+
         }
 
 
@@ -125,6 +131,7 @@ namespace Garage3._0.Areas.Identity.Pages.Account
 
                 user.FName = Input.FName;
                 user.LName = Input.LName;
+                user.SocialSecurityNr = Input.SocialSecurityNr;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
