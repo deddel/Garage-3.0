@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241119104841_VehicleType")]
+    [Migration("20241119123609_VehicleType")]
     partial class VehicleType
     {
         /// <inheritdoc />

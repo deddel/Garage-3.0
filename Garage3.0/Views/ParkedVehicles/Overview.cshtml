@@ -29,7 +29,7 @@
 <form asp-action="Filter2" method="get">
     <div class="input-group mb-3">
         <div class="input-group-append">
-            <select class="form-control" name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()">
+            <select class="form-control" name="type" asp-items="@Html.GetEnumSelectList<VehicleTypeEnum>()">
                 <option selected="selected" value="">Any Vehicle</option>
             </select>
         </div>
