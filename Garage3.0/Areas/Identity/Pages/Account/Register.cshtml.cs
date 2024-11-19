@@ -98,6 +98,14 @@ namespace Garage3._0.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            [Display(Name = "First name")]
+            public string FName { get; set; }
+
+            [Required]
+            [Display(Name = "Last name")]
+            public string LName { get; set; }
         }
 
 

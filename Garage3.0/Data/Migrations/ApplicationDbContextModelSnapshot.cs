@@ -111,7 +111,8 @@ namespace Garage3._0.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserIDId")
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("ArrivalTime")
@@ -141,7 +142,7 @@ namespace Garage3._0.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserIDId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("VehicleTypeId");
 
@@ -331,9 +332,11 @@ namespace Garage3._0.Data.Migrations
 
             modelBuilder.Entity("Garage3._0.Models.Entities.ParkedVehicle", b =>
                 {
-                    b.HasOne("Garage3._0.Models.Entities.ApplicationUser", "ApplicationUserID")
+                    b.HasOne("Garage3._0.Models.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany("Vehicles")
-                        .HasForeignKey("ApplicationUserIDId");
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Garage3._0.Models.Entities.VehicleType", "VehicleType")
                         .WithMany()
@@ -341,7 +344,7 @@ namespace Garage3._0.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUserID");
+                    b.Navigation("ApplicationUser");
 
                     b.Navigation("VehicleType");
                 });

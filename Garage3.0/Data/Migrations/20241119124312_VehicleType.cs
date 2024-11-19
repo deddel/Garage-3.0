@@ -18,10 +18,11 @@ namespace Garage3._0.Data.Migrations
                 newName: "VehicleTypeId");
 
             migrationBuilder.AddColumn<string>(
-                name: "ApplicationUserIDId",
+                name: "ApplicationUserId",
                 table: "ParkedVehicle",
                 type: "nvarchar(450)",
-                nullable: true);
+                nullable: false,
+                defaultValue: "");
 
             migrationBuilder.AddColumn<string>(
                 name: "FName",
@@ -77,9 +78,9 @@ namespace Garage3._0.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ParkedVehicle_ApplicationUserIDId",
+                name: "IX_ParkedVehicle_ApplicationUserId",
                 table: "ParkedVehicle",
-                column: "ApplicationUserIDId");
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ParkedVehicle_VehicleTypeId",
@@ -87,11 +88,12 @@ namespace Garage3._0.Data.Migrations
                 column: "VehicleTypeId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ParkedVehicle_AspNetUsers_ApplicationUserIDId",
+                name: "FK_ParkedVehicle_AspNetUsers_ApplicationUserId",
                 table: "ParkedVehicle",
-                column: "ApplicationUserIDId",
+                column: "ApplicationUserId",
                 principalTable: "AspNetUsers",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ParkedVehicle_VehicleType_VehicleTypeId",
@@ -106,7 +108,7 @@ namespace Garage3._0.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_ParkedVehicle_AspNetUsers_ApplicationUserIDId",
+                name: "FK_ParkedVehicle_AspNetUsers_ApplicationUserId",
                 table: "ParkedVehicle");
 
             migrationBuilder.DropForeignKey(
@@ -117,7 +119,7 @@ namespace Garage3._0.Data.Migrations
                 name: "VehicleType");
 
             migrationBuilder.DropIndex(
-                name: "IX_ParkedVehicle_ApplicationUserIDId",
+                name: "IX_ParkedVehicle_ApplicationUserId",
                 table: "ParkedVehicle");
 
             migrationBuilder.DropIndex(
@@ -125,7 +127,7 @@ namespace Garage3._0.Data.Migrations
                 table: "ParkedVehicle");
 
             migrationBuilder.DropColumn(
-                name: "ApplicationUserIDId",
+                name: "ApplicationUserId",
                 table: "ParkedVehicle");
 
             migrationBuilder.DropColumn(
