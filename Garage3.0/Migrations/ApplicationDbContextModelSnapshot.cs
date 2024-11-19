@@ -4,19 +4,16 @@ using Garage3._0.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Garage3._0.Data.Migrations
+namespace Garage3._0.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241118160148_UserAndSeedData")]
-    partial class UserAndSeedData
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,7 +30,7 @@ namespace Garage3._0.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserIDId")
+                    b.Property<string>("ApplicationUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -56,7 +53,7 @@ namespace Garage3._0.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("VehicleType")
+                    b.Property<int>("VehicleTypeId")
                         .HasColumnType("int");
 
                     b.Property<int>("Wheel")
@@ -64,9 +61,28 @@ namespace Garage3._0.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserIDId");
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("VehicleTypeId");
 
                     b.ToTable("ParkedVehicle");
+                });
+
+            modelBuilder.Entity("Garage3._0.Models.Entities.VehicleType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("VehicleTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VehicleType");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -305,13 +321,21 @@ namespace Garage3._0.Data.Migrations
 
             modelBuilder.Entity("Garage3._0.Models.Entities.ParkedVehicle", b =>
                 {
-                    b.HasOne("Garage3._0.Models.Entities.ApplicationUser", "ApplicationUserID")
+                    b.HasOne("Garage3._0.Models.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany("Vehicles")
-                        .HasForeignKey("ApplicationUserIDId")
+                        .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUserID");
+                    b.HasOne("Garage3._0.Models.Entities.VehicleType", "VehicleType")
+                        .WithMany()
+                        .HasForeignKey("VehicleTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("VehicleType");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

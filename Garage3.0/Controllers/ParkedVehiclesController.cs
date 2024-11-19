@@ -82,129 +82,129 @@ namespace Garage3._0.Controllers
             return View(await order.ToListAsync());
         }
 
-        public async Task<IActionResult> Filter(int? type, string regNr, string color, string brand, string model, int? wheels, DateTime arrivalTime)
-        {
+        //public async Task<IActionResult> Filter(int? type, string regNr, string color, string brand, string model, int? wheels, DateTime arrivalTime)
+        //{
 
-            var filtered = type is null ?
-                _context.ParkedVehicle :
-                _context.ParkedVehicle.Where(m => (int)m.VehicleType == type);
+        //    var filtered = type is null ?
+        //        _context.ParkedVehicle :
+        //        _context.ParkedVehicle.Where(m => (int)m.VehicleTypeId == type);
 
-            filtered = string.IsNullOrWhiteSpace(regNr) ?
-                filtered :
-                filtered.Where(m => m.RegistrationNumber!.Contains(regNr));
+        //    filtered = string.IsNullOrWhiteSpace(regNr) ?
+        //        filtered :
+        //        filtered.Where(m => m.RegistrationNumber!.Contains(regNr));
 
-            filtered = string.IsNullOrWhiteSpace(color) ?
-                filtered :
-                filtered.Where(m => m.Color!.Contains(color));
+        //    filtered = string.IsNullOrWhiteSpace(color) ?
+        //        filtered :
+        //        filtered.Where(m => m.Color!.Contains(color));
 
-            filtered = string.IsNullOrWhiteSpace(brand) ?
-                filtered :
-                filtered.Where(m => m.Brand!.Contains(brand));
+        //    filtered = string.IsNullOrWhiteSpace(brand) ?
+        //        filtered :
+        //        filtered.Where(m => m.Brand!.Contains(brand));
 
-            filtered = string.IsNullOrWhiteSpace(model) ?
-                filtered :
-                filtered.Where(m => m.VehicleModel!.Contains(model));
+        //    filtered = string.IsNullOrWhiteSpace(model) ?
+        //        filtered :
+        //        filtered.Where(m => m.VehicleModel!.Contains(model));
 
-            filtered = wheels is null ?
-                filtered :
-                filtered.Where(m => (int)m.Wheel == wheels);
+        //    filtered = wheels is null ?
+        //        filtered :
+        //        filtered.Where(m => (int)m.Wheel == wheels);
 
-            filtered = arrivalTime == new DateTime(0001, 01, 01, 00, 00, 00) ?
-            filtered :
-            filtered.Where(m => m.ArrivalTime.Date == arrivalTime.Date);
+        //    filtered = arrivalTime == new DateTime(0001, 01, 01, 00, 00, 00) ?
+        //    filtered :
+        //    filtered.Where(m => m.ArrivalTime.Date == arrivalTime.Date);
 
-            if (filtered.IsNullOrEmpty())
-            {
-                TempData["errorMessage"] = "Vehicle not found.";
-            }
+        //    if (filtered.IsNullOrEmpty())
+        //    {
+        //        TempData["errorMessage"] = "Vehicle not found.";
+        //    }
 
-            return View(nameof(Overview), await filtered!.ToListAsync());
-        }
+        //    return View(nameof(Overview), await filtered!.ToListAsync());
+        //}
 
-        public async Task<IActionResult> Filter2(int? type, string regNr, DateTime arrivalTime)
-        {
-            var filtered = _context.ParkedVehicle.Select(p => new ParkedViewModel
-            {
-                Id = p.Id,
-                Type = p.VehicleType,
-                RegistrationNumber = p.RegistrationNumber,
-                ArrivalTime = p.ArrivalTime,
-                ParkedTime = DateTime.Now - p.ArrivalTime
+        //public async Task<IActionResult> Filter2(int? type, string regNr, DateTime arrivalTime)
+        //{
+        //    var filtered = _context.ParkedVehicle.Select(p => new ParkedViewModel
+        //    {
+        //        Id = p.Id,
+        //        Type = p.VehicleType,
+        //        RegistrationNumber = p.RegistrationNumber,
+        //        ArrivalTime = p.ArrivalTime,
+        //        ParkedTime = DateTime.Now - p.ArrivalTime
 
-            });
+        //    });
 
-            filtered = type is null ?
-               filtered :
-               filtered.Where(m => (int)m.Type == type);
+        //    filtered = type is null ?
+        //       filtered :
+        //       filtered.Where(m => (int)m.Type == type);
 
-            filtered = string.IsNullOrWhiteSpace(regNr) ?
-                filtered :
-                filtered.Where(m => m.RegistrationNumber!.Contains(regNr));
+        //    filtered = string.IsNullOrWhiteSpace(regNr) ?
+        //        filtered :
+        //        filtered.Where(m => m.RegistrationNumber!.Contains(regNr));
 
-            filtered = arrivalTime == new DateTime(0001, 01, 01, 00, 00, 00) ?
-                filtered :
-                filtered.Where(m => m.ArrivalTime.Date == arrivalTime.Date);
+        //    filtered = arrivalTime == new DateTime(0001, 01, 01, 00, 00, 00) ?
+        //        filtered :
+        //        filtered.Where(m => m.ArrivalTime.Date == arrivalTime.Date);
 
-            if (filtered.IsNullOrEmpty())
-            {
-                TempData["errorMessage"] = "Vehicle not found.";
-            }
+        //    if (filtered.IsNullOrEmpty())
+        //    {
+        //        TempData["errorMessage"] = "Vehicle not found.";
+        //    }
 
-            return View(nameof(Overview), await filtered.ToListAsync());
-        }
+        //    return View(nameof(Overview), await filtered.ToListAsync());
+        //}
 
-        public async Task<IActionResult> StatisticsView()
-        {
-            var parkedVehicles = await _context.ParkedVehicle.Select(p => new StatisticsViewModel
-            {
-                Wheel = p.Wheel,
-                Color = p.Color,
-                Brand = p.Brand,
-                Model = p.VehicleModel,
-                Type = p.VehicleType,
-                ParkingFee = ParkingHelper.ParkingFee(p.ArrivalTime, DateTime.Now)
-            })
-            .ToListAsync();
+        //public async Task<IActionResult> StatisticsView()
+        //{
+        //    var parkedVehicles = await _context.ParkedVehicle.Select(p => new StatisticsViewModel
+        //    {
+        //        Wheel = p.Wheel,
+        //        Color = p.Color,
+        //        Brand = p.Brand,
+        //        Model = p.VehicleModel,
+        //        Type = p.VehicleType,
+        //        ParkingFee = ParkingHelper.ParkingFee(p.ArrivalTime, DateTime.Now)
+        //    })
+        //    .ToListAsync();
 
-            var type = parkedVehicles.GroupBy(p => p.Type);
-            string cars = "0";
-            string boats = "0";
-            string motorcycles = "0";
-            string buses = "0";
-            string airplanes = "0";
-            foreach (var t in type)
-            {
-                if (t.Key == VehicleType.Car)
-                    cars = $"{t.Count()}";
-                else if (t.Key == VehicleType.Boat)
-                    boats = $"{t.Count()}";
-                else if (t.Key == VehicleType.Motorcycle)
-                    motorcycles = $"{t.Count()}";
-                else if (t.Key == VehicleType.Bus)
-                    buses = $"{t.Count()}";
-                else
-                    airplanes = $"{t.Count()}";
-            }
-            int amountWheels = parkedVehicles.Sum(s => s.Wheel);
-            decimal sum = 0;
-            foreach (var s in parkedVehicles)
-            {
-                sum += s.ParkingFee;
-            }
+        //    var type = parkedVehicles.GroupBy(p => p.Type);
+        //    string cars = "0";
+        //    string boats = "0";
+        //    string motorcycles = "0";
+        //    string buses = "0";
+        //    string airplanes = "0";
+        //    foreach (var t in type)
+        //    {
+        //        if (t.Key == VehicleType.Car)
+        //            cars = $"{t.Count()}";
+        //        else if (t.Key == VehicleType.Boat)
+        //            boats = $"{t.Count()}";
+        //        else if (t.Key == VehicleType.Motorcycle)
+        //            motorcycles = $"{t.Count()}";
+        //        else if (t.Key == VehicleType.Bus)
+        //            buses = $"{t.Count()}";
+        //        else
+        //            airplanes = $"{t.Count()}";
+        //    }
+        //    int amountWheels = parkedVehicles.Sum(s => s.Wheel);
+        //    decimal sum = 0;
+        //    foreach (var s in parkedVehicles)
+        //    {
+        //        sum += s.ParkingFee;
+        //    }
 
-            var displayStats = new StatisticsDisplayViewModel
-            {
-                Cars = cars,
-                Boats = boats,
-                Buses = buses,
-                Motorcycles = motorcycles,
-                Airplanes = airplanes,
-                Wheels = amountWheels,
-                Sum = sum
-            };
+        //    var displayStats = new StatisticsDisplayViewModel
+        //    {
+        //        Cars = cars,
+        //        Boats = boats,
+        //        Buses = buses,
+        //        Motorcycles = motorcycles,
+        //        Airplanes = airplanes,
+        //        Wheels = amountWheels,
+        //        Sum = sum
+        //    };
 
-            return View(displayStats);
-        }
+        //    return View(displayStats);
+        //}
 
         public async Task<IActionResult> Overview(string sortOrder)
         {

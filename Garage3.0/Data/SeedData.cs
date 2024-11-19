@@ -9,7 +9,7 @@ namespace Garage3._0.Data
         private static RoleManager<IdentityRole> roleManager = default!;
         private static UserManager<ApplicationUser> userManager = default!;
 
-        public static async Task Init(ApplicationDbContext _context, IServiceProvider services)
+        public static async Task InitAsync(ApplicationDbContext _context, IServiceProvider services)
         {
             context = _context;
             if (context.Roles.Any()) return;
@@ -56,9 +56,9 @@ namespace Garage3._0.Data
 
         private static async Task<ApplicationUser> AddAccountAsync(string userName, string pw, string fName, string lName, string socialSecurityNr)
         {
-            var found = await userManager.FindByNameAsync(userName);
+            //var found = await userManager.FindByNameAsync(userName);
 
-            if (found != null) return null!;
+            //if (found != null) return null!;
 
             var user = new ApplicationUser
             {

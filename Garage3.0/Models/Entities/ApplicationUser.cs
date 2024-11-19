@@ -11,6 +11,7 @@ namespace Garage3._0.Models.Entities
         public string LName { get; set; }
         public string SocialSecurityNr { get; set; }
 
+        //Nav prop
         public ICollection<ParkedVehicle> Vehicles { get; set; } = new List<ParkedVehicle>();
 
     }

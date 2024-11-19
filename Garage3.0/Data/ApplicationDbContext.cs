@@ -10,7 +10,21 @@ namespace Garage3._0.Data
             : base(options)
         {
         }
-        public DbSet<Garage3._0.Models.Entities.ParkedVehicle> ParkedVehicle { get; set; } = default!;
+        public DbSet<ParkedVehicle> ParkedVehicle { get; set; }
+
+        public DbSet<VehicleType> VehicleType { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ParkedVehicle>()
+                .HasOne(v => v.ApplicationUser) // A Vehicle has one User
+                .WithMany(u => u.Vehicles) // A User has many Vehicles
+                .HasForeignKey(v => v.ApplicationUserId) // Foreign key in the Vehicle table
+                .OnDelete(DeleteBehavior.Cascade); // Optional: Cascade delete if the user is removed
+        }
 
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
