@@ -87,7 +87,7 @@ namespace Garage3._0.Controllers
 
             var filtered = type is null ?
                 _context.ParkedVehicle :
-                _context.ParkedVehicle.Where(m => (int)m.VehicleType == type);
+                _context.ParkedVehicle.Where(m => m.VehicleType.Id == type);
 
             filtered = string.IsNullOrWhiteSpace(regNr) ?
                 filtered :
@@ -135,7 +135,7 @@ namespace Garage3._0.Controllers
 
             filtered = type is null ?
                filtered :
-               filtered.Where(m => (int)m.Type == type);
+               filtered.Where(m => m.Type.Id == type);
 
             filtered = string.IsNullOrWhiteSpace(regNr) ?
                 filtered :
