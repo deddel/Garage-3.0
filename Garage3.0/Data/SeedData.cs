@@ -9,7 +9,7 @@ namespace Garage3._0.Data
         private static RoleManager<IdentityRole> roleManager = default!;
         private static UserManager<ApplicationUser> userManager = default!;
 
-        public static async Task Init(ApplicationDbContext _context, IServiceProvider services)
+        public static async Task InitAsync(ApplicationDbContext _context, IServiceProvider services)
         {
             context = _context;
             if (context.Roles.Any()) return;
@@ -37,7 +37,7 @@ namespace Garage3._0.Data
             if (!await userManager.IsInRoleAsync(user, roleName))
             {
                 var result = await userManager.AddToRoleAsync(user, roleName);
-                if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+                if (!result.Succeeded) throw new Exception(string.Join(", ", result.Errors.Select(x => "Code " + x.Code + " Description" + x.Description)));
 
             }
         }
@@ -50,7 +50,7 @@ namespace Garage3._0.Data
                 var role = new IdentityRole { Name = roleName };
                 var result = await roleManager.CreateAsync(role);
 
-                if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+                if (!result.Succeeded) throw new Exception(string.Join(", ", result.Errors.Select(x => "Code " + x.Code + " Description" + x.Description)));
             }
         }
 
@@ -71,7 +71,7 @@ namespace Garage3._0.Data
 
             var result = await userManager.CreateAsync(user, pw);
 
-            if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+            if (!result.Succeeded) throw new Exception(string.Join(", ", result.Errors.Select(x => "Code " + x.Code + " Description" + x.Description)));
 
             return user;
         }

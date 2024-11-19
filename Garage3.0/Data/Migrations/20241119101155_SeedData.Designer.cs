@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241118160148_UserAndSeedData")]
-    partial class UserAndSeedData
+    [Migration("20241119101155_SeedData")]
+    partial class SeedData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
