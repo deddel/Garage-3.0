@@ -61,6 +61,8 @@ namespace Garage3._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ArrivalTime,ApplicationUserId,VehicleTypeId")] ParkedVehicle parkedVehicle)
         {
+            ModelState.Remove("ApplicationUser");
+            ModelState.Remove("VehicleType");
             if (ModelState.IsValid)
             {
                 _context.Add(parkedVehicle);

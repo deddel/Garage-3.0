@@ -56,7 +56,7 @@ namespace Garage3._0.Data
 
         private static async Task<ApplicationUser> AddAccountAsync(string accountEmail, string pw, string fName, string lName, string socialSecurityNr)
         {
-            var found = await userManager.FindByNameAsync(accountEmail);
+            var found = await userManager.FindByEmailAsync(accountEmail);
 
             if (found != null) return null!;
 

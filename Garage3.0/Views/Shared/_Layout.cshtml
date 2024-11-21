@@ -31,6 +31,9 @@
                         <li navigation-active-for="Vehicles" class="nav-item">
                             <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
                         </li>
+                        <li navigation-active-for="Vehicles" class="nav-item">
+                            <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="ApplicationUserViewModels" asp-action="Index">Vehicles</a>
+                        </li>
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
