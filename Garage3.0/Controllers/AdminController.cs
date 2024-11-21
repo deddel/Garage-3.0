@@ -9,15 +9,17 @@ using Garage3._0.Data;
 using Garage3._0.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Garage3._0.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Garage3._0.Controllers
 {
-    public class ApplicationUserViewModelsController : Controller
+    [Authorize(Roles = "Admin")]
+    public class AdminController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public ApplicationUserViewModelsController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;

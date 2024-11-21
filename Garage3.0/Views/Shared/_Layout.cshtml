@@ -32,7 +32,7 @@
                             <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
                         </li>
                         <li navigation-active-for="ApplicationUserViewModels" class="nav-item">
-                            <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="ApplicationUserViewModels" asp-action="Index">Do not click yet</a>
+                            <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="Admin" asp-action="Index">Admin Panel</a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
