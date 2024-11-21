@@ -34,7 +34,7 @@ namespace Garage3._0.Controllers
         //}
 
         // GET: ApplicationUserViewModels
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> ControlPanel()
         {
             var users = await _userManager.Users.ToListAsync();
 
