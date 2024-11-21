@@ -22,6 +22,8 @@ namespace Garage3._0.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
+
+
         //private readonly ApplicationDbContext _context;
 
         //public ApplicationUserViewModelsController(ApplicationDbContext context)
@@ -33,7 +35,34 @@ namespace Garage3._0.Controllers
         public async Task<IActionResult> Index()
         {
             var users = await _userManager.Users.ToListAsync();
-            return View(users); // Return a view that lists the users
+
+            var userViewModels = new List<ApplicationUserViewModel>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user); // Await each call
+                userViewModels.Add(new ApplicationUserViewModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    FName = user.FName,
+                    LName = user.LName,
+                    Roles = string.Join(", ", roles)
+                });
+            }
+
+            //var userViewModels = await Task.WhenAll(users.Select(async user => new ApplicationUserViewModel
+            //{
+            //    Id = user.Id,
+            //    UserName = user.UserName,
+            //    Email = user.Email,
+            //    FName = user.FName,
+            //    LName = user.LName,
+            //    Roles = string.Join(", ", await _userManager.GetRolesAsync(user))
+            //}));
+
+
+            return View(userViewModels); // Return a view that lists the users
         }
 
         // Action to manage user roles
@@ -44,6 +73,8 @@ namespace Garage3._0.Controllers
 
             var userRoles = await _userManager.GetRolesAsync(user);
             var allRoles = _roleManager.Roles.ToList();
+            Console.WriteLine(allRoles.ToString);
+            Console.WriteLine(userRoles.ToString);
 
             var model = new ManageRolesViewModel
             {
