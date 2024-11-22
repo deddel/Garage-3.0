@@ -36,7 +36,8 @@ namespace Garage3._0.Models.Entities
         [Required]
         public VehicleType VehicleType { get; set; } = new VehicleType();
 
+        //Foreign Key för ParkingSpot
         public int ParkingSpotId { get; set; }
-        public ParkingSpot ParkingSpot { get; set; }
+        public ParkingSpot ParkingSpot { get; set; } //Nav prop
     }
 }

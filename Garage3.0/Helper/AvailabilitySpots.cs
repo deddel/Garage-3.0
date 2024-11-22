@@ -11,7 +11,7 @@ namespace Garage3._0.Helper
         public async Task<ParkingSpot> GetAvailabilitySpots()
         {
             var isSpotsAvailable = await _context.ParkingSpots
-                .FirstOrDefaultAsync(s => s.IsAvailable);
+                .FirstOrDefaultAsync(s => s.IsAvailable);  //Hittar den första lediga platsen
             return isSpotsAvailable;
         }
 
