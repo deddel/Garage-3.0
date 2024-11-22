@@ -4,6 +4,7 @@ using Garage3._0.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241122085604_NewEdited")]
+    partial class NewEdited
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,58 +172,6 @@ namespace Garage3._0.Migrations
                         .HasFilter("[RegNumber] IS NOT NULL");
 
                     b.ToTable("ParkingSpots");
-
-                    b.HasData(
-                        new
-                        {
-                            SpotId = 1,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 2,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 3,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 4,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 5,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 6,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 7,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 8,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 9,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 10,
-                            IsAvailable = true
-                        });
                 });
 
             modelBuilder.Entity("Garage3._0.Models.Entities.VehicleType", b =>
