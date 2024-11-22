@@ -4,6 +4,7 @@ using Garage3._0.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241119223743_AddedParkingSpot")]
+    partial class AddedParkingSpot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,9 +125,6 @@ namespace Garage3._0.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("ParkingSpotId")
-                        .HasColumnType("int");
-
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -150,77 +150,22 @@ namespace Garage3._0.Migrations
 
             modelBuilder.Entity("Garage3._0.Models.Entities.ParkingSpot", b =>
                 {
-                    b.Property<int>("SpotId")
+                    b.Property<int>("Spot")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SpotId"));
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Spot"));
 
                     b.Property<string>("RegNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("SpotId");
+                    b.HasKey("Spot");
 
                     b.HasIndex("RegNumber")
-                        .IsUnique()
-                        .HasFilter("[RegNumber] IS NOT NULL");
+                        .IsUnique();
 
-                    b.ToTable("ParkingSpots");
-
-                    b.HasData(
-                        new
-                        {
-                            SpotId = 1,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 2,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 3,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 4,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 5,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 6,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 7,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 8,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 9,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 10,
-                            IsAvailable = true
-                        });
+                    b.ToTable("ParkingSpot");
                 });
 
             modelBuilder.Entity("Garage3._0.Models.Entities.VehicleType", b =>
@@ -428,7 +373,9 @@ namespace Garage3._0.Migrations
                     b.HasOne("Garage3._0.Models.Entities.ParkedVehicle", "ParkedVehicle")
                         .WithOne("ParkingSpot")
                         .HasForeignKey("Garage3._0.Models.Entities.ParkingSpot", "RegNumber")
-                        .HasPrincipalKey("Garage3._0.Models.Entities.ParkedVehicle", "RegistrationNumber");
+                        .HasPrincipalKey("Garage3._0.Models.Entities.ParkedVehicle", "RegistrationNumber")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ParkedVehicle");
                 });
