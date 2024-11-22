@@ -47,7 +47,8 @@
                 @Html.DisplayFor(modelItem => item.Roles)
             </td>
             <td>
-                <a asp-action="AdminToggle" asp-route-id="@item.Id">Admin</a>
+                <a asp-action="AdminToggle" asp-route-id="@item.Id">Admin Toggle</a> |
+                <a asp-action="MemberToggle" asp-route-id="@item.Id">Member Toggle</a>
             </td>
         </tr>
 }

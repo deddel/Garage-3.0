@@ -296,6 +296,7 @@ namespace Garage3._0.Controllers
                     return RedirectToAction("Login", "Account");  // Redirect to login page
                 }
 
+                //Create a ParkedVehicle
                 var parkedVehicle = new ParkedVehicle
                 {
                     VehicleTypeId = model.VehicleTypeId,
@@ -308,8 +309,9 @@ namespace Garage3._0.Controllers
                     ApplicationUserId = userId
                 };
 
-                // Find the parking spot and mark it as occupied
+                // Find the selected parking spot
                 var parkingSpot = await _context.ParkingSpots.FindAsync(model.ParkingSpotId);
+                // Check if the parkingspot is available
                 if (parkingSpot == null || !parkingSpot.IsAvailable)
                 {
                     ModelState.AddModelError("ParkingSpotId", "Selected parking spot is not available.");
@@ -322,14 +324,14 @@ namespace Garage3._0.Controllers
                     return View(model);
                 }
 
-                // Associate the parked vehicle with the parking spot
+                // Associate the vehicle with the parking spot and amrk it as occupied
                 parkedVehicle.ParkingSpot = parkingSpot;
                 parkingSpot.IsAvailable = false;
 
                 _context.Add(parkedVehicle);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked.";
+                TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked in parkingspot {parkingSpot.SpotId}.";
                 return RedirectToAction(nameof(Overview));
                 
             }
@@ -424,10 +426,17 @@ namespace Garage3._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
+            var parkedVehicle = await _context.ParkedVehicle
+                .Include(pv => pv.ParkingSpot)
+                .FirstOrDefaultAsync(pv =>pv.Id == id);
             string? regId = parkedVehicle?.RegistrationNumber;
+
+            var parkingSpot = parkedVehicle.ParkingSpot;
             if (parkedVehicle != null)
             {
+                // Mark the parkingspot as available
+                if (parkingSpot != null) { parkingSpot.IsAvailable = true; }
+                // Remove vehicle
                 _context.ParkedVehicle.Remove(parkedVehicle);
             }
 

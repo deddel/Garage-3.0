@@ -10,9 +10,17 @@
 
   <ItemGroup>
     <Compile Remove="Views\ParkingSpots\**" />
+    <Compile Remove="Views\Vehicles\**" />
     <Content Remove="Views\ParkingSpots\**" />
+    <Content Remove="Views\Vehicles\**" />
     <EmbeddedResource Remove="Views\ParkingSpots\**" />
+    <EmbeddedResource Remove="Views\Vehicles\**" />
     <None Remove="Views\ParkingSpots\**" />
+    <None Remove="Views\Vehicles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\ParkingSpotsController.cs" />
   </ItemGroup>
 
   <ItemGroup>
