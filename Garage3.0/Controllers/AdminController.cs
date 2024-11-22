@@ -71,8 +71,6 @@ namespace Garage3._0.Controllers
 
             var userRoles = await _userManager.GetRolesAsync(user);
             var allRoles = _roleManager.Roles.ToList();
-            Console.WriteLine(allRoles.ToString);
-            Console.WriteLine(userRoles.ToString);
 
             var model = new ManageRolesViewModel
             {

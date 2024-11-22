@@ -280,38 +280,9 @@ namespace Garage3._0.Controllers
         // POST: ParkedVehicles/Park
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[Authorize]
-        //public async Task<IActionResult> Park([Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ApplicationUserId,VehicleTypeId,ParkingSpotId")] ParkedVehicle parkedVehicle)
-        //{
-        //    ModelState.Remove("ApplicationUser");
-        //    ModelState.Remove("VehicleType");
-        //    ModelState.Remove("ParkingSpot");
-        //    if (ModelState.IsValid)
-        //    {
-        //        DateTime dateTime = DateTime.Now;
-        //        dateTime = new DateTime(
-        //            dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond),
-        //            dateTime.Kind
-        //        );
-        //        parkedVehicle.ArrivalTime = dateTime;
-        //        if (parkedVehicle.RegistrationNumber != null)
-        //        {
-        //            parkedVehicle.RegistrationNumber = parkedVehicle.RegistrationNumber.ToUpper();
-        //        }
-        //        _context.Add(parkedVehicle);
-        //        await _context.SaveChangesAsync();
-        //        TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked.";
-        //        return RedirectToAction(nameof(Overview));
-        //    }
-        //    ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
-        //    ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
-        //    return View(parkedVehicle);
-        //}
-        // POST: ParkedVehicles/Park
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Park(ParkedVehicleViewModel model)
         {
             if (ModelState.IsValid)
