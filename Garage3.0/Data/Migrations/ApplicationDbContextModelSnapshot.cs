@@ -142,7 +142,7 @@ namespace Garage3._0.Migrations
 
                     b.HasIndex("VehicleTypeId");
 
-                    b.ToTable("ParkedVehicle");
+                    b.ToTable("ParkedVehicle", (string)null);
                 });
 
             modelBuilder.Entity("Garage3._0.Models.Entities.VehicleType", b =>
@@ -159,7 +159,7 @@ namespace Garage3._0.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleType");
+                    b.ToTable("VehicleType", (string)null);
 
                     b.HasData(
                         new
