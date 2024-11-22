@@ -48,6 +48,21 @@ namespace Garage3._0.Controllers
             return View(userViewModels); // Return a view that lists the users
         }
 
+        public async Task<IActionResult> AdminToggle(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+            //var userId = _userManager.GetUserId(User);
+            var result = await _userManager.AddToRoleAsync(user, "Admin");
+            if (result.Succeeded)
+            {
+                return View(nameof(ControlPanel));
+            }
+
+            return View("Error");
+
+        }
+
         // Action to manage user roles
         public async Task<IActionResult> ManageRoles(string userId)
         {
