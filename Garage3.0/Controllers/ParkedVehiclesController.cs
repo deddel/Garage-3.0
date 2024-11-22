@@ -277,10 +277,11 @@ namespace Garage3._0.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Park([Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ApplicationUserId,VehicleTypeId")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Park([Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ApplicationUserId,VehicleTypeId,ParkingSpotId")] ParkedVehicle parkedVehicle)
         {
             ModelState.Remove("ApplicationUser");
             ModelState.Remove("VehicleType");
+            ModelState.Remove("ParkingSpot");
             if (ModelState.IsValid)
             {
                 DateTime dateTime = DateTime.Now;

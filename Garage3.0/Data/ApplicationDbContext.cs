@@ -33,7 +33,7 @@ namespace Garage3._0.Data
             modelBuilder.Entity<ParkingSpot>()
                 .HasOne(p => p.ParkedVehicle)
                 .WithOne(ps => ps.ParkingSpot)
-                .HasForeignKey<ParkingSpot>(ps => ps.RegNumber) //Främmande nyckel
+                .HasForeignKey<ParkingSpot>(ps => ps.ParkedVehicleRegistrationNumber) //Främmande nyckel
                 .HasPrincipalKey<ParkedVehicle>(p => p.RegistrationNumber);
 
 
