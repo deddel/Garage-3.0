@@ -22,10 +22,6 @@ namespace Garage3._0.Models.Entities
         public int Wheel { get; set; }
         public DateTime ArrivalTime { get; set; }
 
-        ////Foreign Key
-        //public ApplicationUser ApplicationUserID { get; set; }
-
-
         //Foreign Key
         public string ApplicationUserId { get; set; }
         //Navigational Property
@@ -34,7 +30,7 @@ namespace Garage3._0.Models.Entities
         public int VehicleTypeId { get; set; }
         //Nav prop
         [Required]
-        public VehicleType VehicleType { get; set; } = new VehicleType();
+        public VehicleType VehicleType { get; set; }
 
         //Foreign Key för ParkingSpot
         public int ParkingSpotId { get; set; }

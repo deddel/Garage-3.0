@@ -7,49 +7,48 @@
 <h1>Checkout</h1>
 
 <div>
-    <div id="print-this" style="background-color: black;">
+    <div id="print-this" class="wrapper" style="background-color: #222831;">
         <h4>Receipt</h4>
         <hr />
         <dl class="row">
-            <dt class = "col-sm-4">
+            <dt class="width-helper">
                 Registration Number
             </dt>
-            <dd class = "col-sm-8">
+            <dd class="width-helper">
                 @Html.DisplayFor(model => model.RegistrationNumber)
             </dd>
-            <dt class = "col-sm-4">
+            <dt class="width-helper">
                 Arrival Time
             </dt>
-            <dd class = "col-sm-8">
+            <dd class="width-helper">
                 @Html.DisplayFor(model => model.ArrivalTime)
             </dd>
-            <dt class = "col-sm-4">
+            <dt class="width-helper">
                 Departure Time
             </dt>
-            <dd class = "col-sm-8">
+            <dd class="width-helper">
                 @Html.DisplayFor(model => model.DepartureTime)
             </dd>
-            <dt class = "col-sm-4">
+            <dt class="width-helper">
                 Parked Time
             </dt>
-            <dd class="col-sm-8">
+            <dd class="width-helper">
                 @ParkingHelper.FormatTimeSpan(Model.ParkedTime)
             </dd>
-            <dt class = "col-sm-4">
+            <dt class="width-helper">
                 Parking Fee
             </dt>
-            <dd class = "col-sm-8">
+            <dd class="width-helper">
                 @Html.DisplayFor(model => model.ParkedFee) <span>KR</span>
             </dd>
         </dl>
     </div>
 
-     <form asp-action="Delete" asp-controller="ParkedVehicles" method="post" id="printAndUnparkForm">
+     <form asp-action="Delete" asp-controller="ParkedVehicles" method="post" id="printAndUnparkForm" class="form-helper">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Unpark" class="btn btn-danger" />
-        <button type="button" onclick="PrintAndUnpark()" class="btn btn-warning">Unpark and Print Receipt</button>
-        <a asp-action="Overview" class="btn btn-primary">Back to garage</a>
-       
+        <input type="submit" value="Unpark" class="btn btn-danger input-margin" />
+        <button type="button" onclick="PrintAndUnpark()" class="btn btn-warning input-margin">Unpark and Print Receipt</button>
+        <a asp-action="Overview" class="btn tiny-button input-margin">&larr; Back to garage</a>
     </form>
 </div>
 

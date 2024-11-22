@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Garage3._0.Models.Entities;
 using Microsoft.AspNetCore.Identity;
+using Garage3._0.Models.ViewModels;
 
 namespace Garage3._0.Data
 {
@@ -32,7 +33,7 @@ namespace Garage3._0.Data
             modelBuilder.Entity<ParkingSpot>()
                 .HasOne(p => p.ParkedVehicle)
                 .WithOne(ps => ps.ParkingSpot)
-                .HasForeignKey<ParkingSpot>(ps => ps.RegNumber) //Främmande nyckel
+                .HasForeignKey<ParkingSpot>(ps => ps.ParkedVehicleRegistrationNumber) //Främmande nyckel
                 .HasPrincipalKey<ParkedVehicle>(p => p.RegistrationNumber);
 
 
@@ -55,5 +56,6 @@ namespace Garage3._0.Data
             //    new ParkedVehicle { Id = 3, VehicleType = VehicleType.Motorcycle, RegistrationNumber = "LDT432", Color = "Green", Brand = "Honda", VehicleModel = "CGI", Wheel = 2, ArrivalTime = DateTime.ParseExact("23/05/2011 09:42:17", "dd/MM/yyyy h:m:s", null) }
             //);
         }
+        //public DbSet<Garage3._0.Models.ViewModels.ApplicationUserViewModel> ApplicationUserViewModel { get; set; } = default!;
     }
 }

@@ -18,13 +18,13 @@ namespace Garage3._0.Data
             userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
             var roleNames = new[] { "Member", "Admin" };
-            //var adminEmail = "admin@admin.com";
-            //var userEmail = "member@member.com";
+            var adminEmail = "admin@admin.com";
+            var userEmail = "member@member.com";
 
             await AddRolesAsync(roleNames);
 
-            var admin = await AddAccountAsync("Admin1337", "P@55w.rd", "Admin", "Adminsson", "123456-1234");
-            var member = await AddAccountAsync("Member1337", "Pa55w.rd", "Member", "Membersson", "123456-4321");
+            var admin = await AddAccountAsync(adminEmail, "P@55w.rd", "Admin", "Adminsson", "123456-1234");
+            var member = await AddAccountAsync(userEmail, "Pa55w.rd", "Member", "Membersson", "123456-4321");
 
 
             await AddUserToRoleAsync(admin, "Admin");
@@ -56,7 +56,7 @@ namespace Garage3._0.Data
 
         private static async Task<ApplicationUser> AddAccountAsync(string accountEmail, string pw, string fName, string lName, string socialSecurityNr)
         {
-            var found = await userManager.FindByNameAsync(accountEmail);
+            var found = await userManager.FindByEmailAsync(accountEmail);
 
             if (found != null) return null!;
 

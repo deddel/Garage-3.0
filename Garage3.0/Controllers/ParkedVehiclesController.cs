@@ -10,6 +10,7 @@ using Garage3._0.Models.Entities;
 using Garage3._0.Helper;
 using Garage3._0.Models.ViewModels;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace Garage3._0.Controllers
@@ -154,78 +155,54 @@ namespace Garage3._0.Controllers
             return View(nameof(Overview), await filtered.ToListAsync());
         }
 
-        //public async Task<IActionResult> StatisticsView()
-        //{
-        //    var vehicleTypes = await _context.VehicleType.ToListAsync();
-        //    var parkedVehicles = await _context.ParkedVehicle.Select(p => new 
-        //    {
-        //        Wheel = p.Wheel,
-        //        Color = p.Color,
-        //        Brand = p.Brand,
-        //        Model = p.VehicleModel,
-        //        Type = p.VehicleType.VehicleTypeName,
-        //        ParkingFee = ParkingHelper.ParkingFee(p.ArrivalTime, DateTime.Now)
-        //    })
-        //    .ToListAsync();
+        public async Task<IActionResult> StatisticsView()
+        {
+            var vehicleTypes = await _context.VehicleType.ToListAsync();
+            var parkedVehicles = await _context.ParkedVehicle.Select(p => new
+            {
+                Wheel = p.Wheel,
+                Color = p.Color,
+                Brand = p.Brand,
+                Model = p.VehicleModel,
+                Type = p.VehicleType.VehicleTypeName,
+                ParkingFee = ParkingHelper.ParkingFee(p.ArrivalTime, DateTime.Now)
+            })
+            .ToListAsync();
 
-        //    var typeCounts = parkedVehicles
-        //        .GroupBy(p => p.Type)
-        //        .ToDictionary(g => g.Key, g => g.Count());
+            var typeCounts = parkedVehicles
+                .GroupBy(p => p.Type)
+                .ToDictionary(g => g.Key, g => g.Count());
 
-        //    var vehicleTypeCounts = vehicleTypes.ToDictionary(
-        //        vt => vt.VehicleTypeName,
-        //        vt => typeCounts.GetValueOrDefault(vt.VehicleTypeName, 0).ToString());
+            var vehicleTypeCounts = vehicleTypes.ToDictionary(
+                vt => vt.VehicleTypeName,
+                vt => typeCounts.GetValueOrDefault(vt.VehicleTypeName, 0).ToString());
 
-        //    //var type = parkedVehicles.GroupBy(p => p.Type);
-        //    //string cars = "0";
-        //    //string boats = "0";
-        //    //string motorcycles = "0";
-        //    //string buses = "0";
-        //    //string airplanes = "0";
-        //    //foreach (var t in type)
-        //    //{
-        //    //    if (t.Key == VehicleTypes.)
-        //    //        cars = $"{t.Count()}";
-        //    //    else if (t.Key == VehicleType.Boat)
-        //    //        boats = $"{t.Count()}";
-        //    //    else if (t.Key == VehicleType.Motorcycle)
-        //    //        motorcycles = $"{t.Count()}";
-        //    //    else if (t.Key == VehicleType.Bus)
-        //    //        buses = $"{t.Count()}";
-        //    //    else
-        //    //        airplanes = $"{t.Count()}";
-        //    //}
-        //    int amountWheels = parkedVehicles.Sum(s => s.Wheel);
-        //    decimal sum = 0;
-        //    foreach (var s in parkedVehicles)
-        //    {
-        //        sum += s.ParkingFee;
-        //    }
+            int amountWheels = parkedVehicles.Sum(s => s.Wheel);
+            decimal sum = 0;
+            foreach (var s in parkedVehicles)
+            {
+                sum += s.ParkingFee;
+            }
 
-        //    var displayStats = new StatisticsDisplayViewModel
-        //    {
-        //        Cars = vehicleTypeCounts.GetValueOrDefault("Car", "0"),
-        //        Boats = vehicleTypeCounts.GetValueOrDefault("Boat", "0"),
-        //        Buses = vehicleTypeCounts.GetValueOrDefault("Bus", "0"),
-        //        Motorcycles = vehicleTypeCounts.GetValueOrDefault("Motorcycle", "0"),
-        //        Airplanes = vehicleTypeCounts.GetValueOrDefault("Airplane", "0"),
-        //        Wheels = amountWheels,
-        //        Sum = sum
-        //        //Cars = cars,
-        //        //Boats = boats,
-        //        //Buses = buses,
-        //        //Motorcycles = motorcycles,
-        //        //Airplanes = airplanes,
-        //        //Wheels = amountWheels,
-        //        //Sum = sum
-        //    };
+            var displayStats = new StatisticsDisplayViewModel
+            {
+                Cars = vehicleTypeCounts.GetValueOrDefault("Car", "0"),
+                Boats = vehicleTypeCounts.GetValueOrDefault("Boat", "0"),
+                Buses = vehicleTypeCounts.GetValueOrDefault("Bus", "0"),
+                Motorcycles = vehicleTypeCounts.GetValueOrDefault("Motorcycle", "0"),
+                Airplanes = vehicleTypeCounts.GetValueOrDefault("Airplane", "0"),
+                Wheels = amountWheels,
+                Sum = sum
+            };
 
-        //    return View(displayStats);
-        //}
+            return View(displayStats);
+        }
 
         public async Task<IActionResult> Overview(string sortOrder)
         {
-            var model = _context.ParkedVehicle.Select(p => new ParkedViewModel
+            var applicationDbContext = _context.ParkedVehicle.Include(p => p.ApplicationUser).Include(p => p.VehicleType);
+
+            var model = applicationDbContext.Select(p => new ParkedViewModel
             {
                 Id = p.Id,
                 Type = p.VehicleType,
@@ -275,6 +252,8 @@ namespace Garage3._0.Controllers
             }
 
             var parkedVehicle = await _context.ParkedVehicle
+                .Include(p => p.ApplicationUser)
+                .Include(p => p.VehicleType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (parkedVehicle == null)
             {
@@ -287,6 +266,8 @@ namespace Garage3._0.Controllers
         // GET: ParkedVehicles/Park
         public IActionResult Park()
         {
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id");
             return View();
         }
 
@@ -295,8 +276,12 @@ namespace Garage3._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,VehicleModel,Wheel")] ParkedVehicle parkedVehicle)
+        [Authorize]
+        public async Task<IActionResult> Park([Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ApplicationUserId,VehicleTypeId,ParkingSpotId")] ParkedVehicle parkedVehicle)
         {
+            ModelState.Remove("ApplicationUser");
+            ModelState.Remove("VehicleType");
+            ModelState.Remove("ParkingSpot");
             if (ModelState.IsValid)
             {
                 DateTime dateTime = DateTime.Now;
@@ -314,6 +299,8 @@ namespace Garage3._0.Controllers
                 TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked.";
                 return RedirectToAction(nameof(Overview));
             }
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
             return View(parkedVehicle);
         }
 
@@ -330,6 +317,8 @@ namespace Garage3._0.Controllers
             {
                 return NotFound();
             }
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
             return View(parkedVehicle);
         }
 
@@ -338,13 +327,15 @@ namespace Garage3._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ArrivalTime")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ArrivalTime,ApplicationUserId,VehicleTypeId")] ParkedVehicle parkedVehicle)
         {
             if (id != parkedVehicle.Id)
             {
                 return NotFound();
             }
 
+            ModelState.Remove("ApplicationUser");
+            ModelState.Remove("VehicleType");
             if (ModelState.IsValid)
             {
                 try
@@ -366,6 +357,8 @@ namespace Garage3._0.Controllers
                 }
                 return RedirectToAction(nameof(Overview));
             }
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
             return View(parkedVehicle);
         }
 
@@ -378,6 +371,8 @@ namespace Garage3._0.Controllers
             }
 
             var parkedVehicle = await _context.ParkedVehicle
+                .Include(p => p.ApplicationUser)
+                .Include(p => p.VehicleType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (parkedVehicle == null)
             {

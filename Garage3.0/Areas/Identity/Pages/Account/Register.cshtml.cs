@@ -108,7 +108,7 @@ namespace Garage3._0.Areas.Identity.Pages.Account
             public string LName { get; set; }
 
             [Required]
-            [Display(Name = "Last name")]
+            [Display(Name = "Social Security Number")]
             public string SocialSecurityNr { get; set; }
 
 
