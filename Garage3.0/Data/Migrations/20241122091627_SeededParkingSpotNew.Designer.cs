@@ -4,6 +4,7 @@ using Garage3._0.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241122091627_SeededParkingSpotNew")]
+    partial class SeededParkingSpotNew
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,14 +162,14 @@ namespace Garage3._0.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ParkedVehicleRegistrationNumber")
+                    b.Property<string>("RegNumber")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("SpotId");
 
-                    b.HasIndex("ParkedVehicleRegistrationNumber")
+                    b.HasIndex("RegNumber")
                         .IsUnique()
-                        .HasFilter("[ParkedVehicleRegistrationNumber] IS NOT NULL");
+                        .HasFilter("[RegNumber] IS NOT NULL");
 
                     b.ToTable("ParkingSpots");
 
@@ -427,7 +430,7 @@ namespace Garage3._0.Migrations
                 {
                     b.HasOne("Garage3._0.Models.Entities.ParkedVehicle", "ParkedVehicle")
                         .WithOne("ParkingSpot")
-                        .HasForeignKey("Garage3._0.Models.Entities.ParkingSpot", "ParkedVehicleRegistrationNumber")
+                        .HasForeignKey("Garage3._0.Models.Entities.ParkingSpot", "RegNumber")
                         .HasPrincipalKey("Garage3._0.Models.Entities.ParkedVehicle", "RegistrationNumber");
 
                     b.Navigation("ParkedVehicle");

@@ -58,11 +58,6 @@ nav {
     font-size: 30px;
 }
 
-nav ul li a {
-    color: darkgrey !important;
-    font-size: 20px;
-}
-
 .navbar-nav {
     justify-content: flex-end;
 }
@@ -74,6 +69,8 @@ nav ul li {
 
 .hover-button {
     transition: 0.2s;
+    color: darkgrey !important;
+    font-size: 20px;
 }
 
     .hover-button:hover {
@@ -147,6 +144,7 @@ nav ul li {
     color: white;
     text-decoration: none;
     transition: 0.2s;
+    font-size: 20px;
 }
 
     .regular-button:hover {
@@ -155,6 +153,65 @@ nav ul li {
         color: white;
     }
 
+.tiny-button {
+    background-color: #00ADB5;
+    border-radius: 5px;
+    padding: 7px;
+    color: white;
+    text-decoration: none;
+}
+
+.tiny-button:hover {
+    color: white;
+}
+
+.red {
+    background-color: red;
+}
+
 .overview-table {
-    background-color: #eeeeee;
+    background-color: #393E46;
+    color: white;
+}
+
+.top-list {
+    border-bottom: 10px solid #222831;
+}
+
+th a {
+    color: #00ADB5;
+}
+
+.input-margin {
+    margin: 10px;
+}
+
+.form-helper-large {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.center-group {
+    width: 100%;
+}
+
+.wrapper {
+    width: 500px;
+}
+
+.wrapper-large {
+    width: 1000px;
+}
+
+.width-helper {
+    width: 50%;
+}
+
+.form-helper {
+    flex-direction: row;
+}
+
+.form-floating {
+    color: black;
 }
