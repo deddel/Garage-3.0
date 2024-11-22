@@ -100,15 +100,18 @@ namespace Garage3._0.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             [Required]
+            [StringLength(40, ErrorMessage = "The {0} must be at least {2} and and max {1} characters long.", MinimumLength = 2)]
             [Display(Name = "First name")]
             public string FName { get; set; }
 
             [Required]
+            [StringLength(40, ErrorMessage = "The {0} must be at least {2} and and max {1} characters long.", MinimumLength = 2)]
             [Display(Name = "Last name")]
             public string LName { get; set; }
 
             [Required]
-            [Display(Name = "Last name")]
+            [StringLength(12, ErrorMessage = "The {0} must be at least {2} and and max {1} characters long.", MinimumLength = 2)]
+            [Display(Name = "Social Security Number")]
             public string SocialSecurityNr { get; set; }
 
 

@@ -2,7 +2,7 @@
 {
     public enum VehicleTypeEnum
     {
-        Airplane,
+        Airplane = 1,
         Boat,
         Bus,
         Car,
