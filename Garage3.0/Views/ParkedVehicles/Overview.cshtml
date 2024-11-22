@@ -28,22 +28,22 @@
 
 <form asp-action="Filter2" method="get">
     <div class="input-group mb-3">
-        <div class="input-group-append">
+        <div class="input-group-append input-margin">
             <select class="form-control" name="type" asp-items="@Html.GetEnumSelectList<VehicleTypeEnum>()">
                 <option selected="selected" value="">Any Vehicle</option>
             </select>
         </div>
-        <input type="text" class="form-control" name="regNr" placeholder="Registration number..." />
-        <input type="date" class="form-control" name="arrivalTime" placeholder="Arrival Time..." />
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-primary">Search</button>
+        <input type="text" class="form-control input-margin" name="regNr" placeholder="Registration number..." />
+        <input type="date" class="form-control input-margin" name="arrivalTime" placeholder="Arrival Time..." />
+        <div class="input-group-append input-margin">
+            <button type="submit" class="btn tiny-button">Search &#128269;</button>
         </div>
     </div>
 </form>
 
 <table class="table overview-table">
     <thead>
-        <tr>
+        <tr class="top-list">
             <th>
                 @Html.ActionLink("Vehicle Type", "Overview", new { sortOrder = ViewBag.TypeSortParm })
             </th>
@@ -79,9 +79,9 @@
                 @ParkingHelper.FormatTimeSpan(item.ParkedTime)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="ReceiptView" asp-route-id="@item.Id">Checkout</a>
+                <a class="tiny-button" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                <a class="tiny-button" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                <a class="tiny-button red" asp-action="ReceiptView" asp-route-id="@item.Id">Checkout</a>
             </td>
         </tr>
 }

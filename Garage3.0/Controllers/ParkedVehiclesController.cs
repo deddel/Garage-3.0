@@ -252,6 +252,8 @@ namespace Garage3._0.Controllers
             }
 
             var parkedVehicle = await _context.ParkedVehicle
+                .Include(p => p.ApplicationUser)
+                .Include(p => p.VehicleType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (parkedVehicle == null)
             {
@@ -314,6 +316,8 @@ namespace Garage3._0.Controllers
             {
                 return NotFound();
             }
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
             return View(parkedVehicle);
         }
 
@@ -322,13 +326,15 @@ namespace Garage3._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ArrivalTime")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ArrivalTime,ApplicationUserId,VehicleTypeId")] ParkedVehicle parkedVehicle)
         {
             if (id != parkedVehicle.Id)
             {
                 return NotFound();
             }
 
+            ModelState.Remove("ApplicationUser");
+            ModelState.Remove("VehicleType");
             if (ModelState.IsValid)
             {
                 try
@@ -350,6 +356,8 @@ namespace Garage3._0.Controllers
                 }
                 return RedirectToAction(nameof(Overview));
             }
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
             return View(parkedVehicle);
         }
 
@@ -362,6 +370,8 @@ namespace Garage3._0.Controllers
             }
 
             var parkedVehicle = await _context.ParkedVehicle
+                .Include(p => p.ApplicationUser)
+                .Include(p => p.VehicleType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (parkedVehicle == null)
             {
