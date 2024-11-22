@@ -22,38 +22,8 @@ namespace Garage3._0.Controllers
         }
 
 
-        public async Task<bool> ParkingSpot(string userId, string regNumber)
-        {
-            AvailabilitySpots av = new AvailabilitySpots();
-
-            //Hittar lediga platser
-            var availableSpot = await av.GetAvailabilitySpots();
-
-            if(availableSpot != null)
-            {
-                return false; //Ingen ledig plats
-            }
-
-
-            var newParkVehicle = new ParkedVehicle
-            {
-                ApplicationUserId = userId,
-                RegistrationNumber = regNumber,
-                ArrivalTime = DateTime.Now,
-                ParkingSpotId = availableSpot.SpotId //tilldelar parkeringplatsen till user
-
-            };
-
-            //Sätter parkeringplatsen som upptagen
-            availableSpot.IsAvailable = false;
-
-            //Spara ändringarna i databasen
-            await _context.ParkedVehicle.AddAsync(newParkVehicle);
-            await _context.SaveChangesAsync();
-
-            return true;
-
-        }
+            // Navigation property for ParkingSpot
+    public ParkingSpot ParkingSpot { get; set; }
 
         // GET: ParkingSpots
         public async Task<IActionResult> Index()

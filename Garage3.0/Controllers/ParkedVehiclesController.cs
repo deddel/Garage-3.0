@@ -264,44 +264,110 @@ namespace Garage3._0.Controllers
         }
 
         // GET: ParkedVehicles/Park
+        [HttpGet]
+        [Authorize]
         public IActionResult Park()
         {
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["ParkingSpotId"] = new SelectList(
+                _context.ParkingSpots.Where(ps => ps.IsAvailable),
+                "SpotId",
+                "SpotId");
             ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id");
-            return View();
+
+            return View(new ParkedVehicleViewModel());
         }
 
         // POST: ParkedVehicles/Park
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Authorize]
+        //public async Task<IActionResult> Park([Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ApplicationUserId,VehicleTypeId,ParkingSpotId")] ParkedVehicle parkedVehicle)
+        //{
+        //    ModelState.Remove("ApplicationUser");
+        //    ModelState.Remove("VehicleType");
+        //    ModelState.Remove("ParkingSpot");
+        //    if (ModelState.IsValid)
+        //    {
+        //        DateTime dateTime = DateTime.Now;
+        //        dateTime = new DateTime(
+        //            dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond),
+        //            dateTime.Kind
+        //        );
+        //        parkedVehicle.ArrivalTime = dateTime;
+        //        if (parkedVehicle.RegistrationNumber != null)
+        //        {
+        //            parkedVehicle.RegistrationNumber = parkedVehicle.RegistrationNumber.ToUpper();
+        //        }
+        //        _context.Add(parkedVehicle);
+        //        await _context.SaveChangesAsync();
+        //        TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked.";
+        //        return RedirectToAction(nameof(Overview));
+        //    }
+        //    ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
+        //    ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
+        //    return View(parkedVehicle);
+        //}
+        // POST: ParkedVehicles/Park
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Park([Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ApplicationUserId,VehicleTypeId,ParkingSpotId")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Park(ParkedVehicleViewModel model)
         {
-            ModelState.Remove("ApplicationUser");
-            ModelState.Remove("VehicleType");
-            ModelState.Remove("ParkingSpot");
             if (ModelState.IsValid)
             {
-                DateTime dateTime = DateTime.Now;
-                dateTime = new DateTime(
-                    dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond),
-                    dateTime.Kind
-                );
-                parkedVehicle.ArrivalTime = dateTime;
-                if (parkedVehicle.RegistrationNumber != null)
+                
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null)
                 {
-                    parkedVehicle.RegistrationNumber = parkedVehicle.RegistrationNumber.ToUpper();
+                    ModelState.AddModelError(string.Empty, "User is not logged in.");
+                    return RedirectToAction("Login", "Account");  // Redirect to login page
                 }
+
+                var parkedVehicle = new ParkedVehicle
+                {
+                    VehicleTypeId = model.VehicleTypeId,
+                    RegistrationNumber = model.RegistrationNumber?.ToUpper(),
+                    Color = model.Color,
+                    Brand = model.Brand,
+                    VehicleModel = model.VehicleModel,
+                    Wheel = model.Wheel,
+                    ArrivalTime = DateTime.Now,
+                    ApplicationUserId = userId
+                };
+
+                // Find the parking spot and mark it as occupied
+                var parkingSpot = await _context.ParkingSpots.FindAsync(model.ParkingSpotId);
+                if (parkingSpot == null || !parkingSpot.IsAvailable)
+                {
+                    ModelState.AddModelError("ParkingSpotId", "Selected parking spot is not available.");
+                    ViewData["ParkingSpotId"] = new SelectList(
+                        _context.ParkingSpots.Where(ps => ps.IsAvailable),
+                        "SpotId",
+                        "SpotId"
+                    );
+                    ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Name");
+                    return View(model);
+                }
+
+                // Associate the parked vehicle with the parking spot
+                parkedVehicle.ParkingSpot = parkingSpot;
+                parkingSpot.IsAvailable = false;
+
                 _context.Add(parkedVehicle);
                 await _context.SaveChangesAsync();
+
                 TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked.";
                 return RedirectToAction(nameof(Overview));
+                
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
-            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
-            return View(parkedVehicle);
+
+            // Re-populate ViewData for the dropdowns if validation fails
+
+            ViewData["ParkingSpotId"] = new SelectList(_context.ParkingSpots.Where(ps => ps.IsAvailable), "SpotId", "SpotId");
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Name");
+            return View(model);
         }
 
         // GET: ParkedVehicles/Edit/5

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241121111746_SeedParkingSpot")]
-    partial class SeedParkingSpot
+    [Migration("20241122130606_ParkingSpotParkedVehicle")]
+    partial class ParkingSpotParkedVehicle
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,6 +143,9 @@ namespace Garage3._0.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
+                    b.HasIndex("RegistrationNumber")
+                        .IsUnique();
+
                     b.HasIndex("VehicleTypeId");
 
                     b.ToTable("ParkedVehicle");
@@ -159,14 +162,14 @@ namespace Garage3._0.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<string>("RegNumber")
+                    b.Property<string>("ParkedVehicleRegistrationNumber")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("SpotId");
 
-                    b.HasIndex("RegNumber")
+                    b.HasIndex("ParkedVehicleRegistrationNumber")
                         .IsUnique()
-                        .HasFilter("[RegNumber] IS NOT NULL");
+                        .HasFilter("[ParkedVehicleRegistrationNumber] IS NOT NULL");
 
                     b.ToTable("ParkingSpots");
 
@@ -427,7 +430,7 @@ namespace Garage3._0.Migrations
                 {
                     b.HasOne("Garage3._0.Models.Entities.ParkedVehicle", "ParkedVehicle")
                         .WithOne("ParkingSpot")
-                        .HasForeignKey("Garage3._0.Models.Entities.ParkingSpot", "RegNumber")
+                        .HasForeignKey("Garage3._0.Models.Entities.ParkingSpot", "ParkedVehicleRegistrationNumber")
                         .HasPrincipalKey("Garage3._0.Models.Entities.ParkedVehicle", "RegistrationNumber");
 
                     b.Navigation("ParkedVehicle");

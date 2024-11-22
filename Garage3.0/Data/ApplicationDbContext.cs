@@ -29,13 +29,16 @@ namespace Garage3._0.Data
                 new VehicleType { Id = 4, VehicleTypeName = "Car" },
                 new VehicleType { Id = 5, VehicleTypeName = "Motorcycle" });
 
+            // Enforce uniqueness for RegistrationNumber in ParkedVehicle
+            modelBuilder.Entity<ParkedVehicle>()
+                .HasIndex(p => p.RegistrationNumber)
+                .IsUnique();
 
             modelBuilder.Entity<ParkingSpot>()
                 .HasOne(p => p.ParkedVehicle)
                 .WithOne(ps => ps.ParkingSpot)
                 .HasForeignKey<ParkingSpot>(ps => ps.ParkedVehicleRegistrationNumber) //Främmande nyckel
                 .HasPrincipalKey<ParkedVehicle>(p => p.RegistrationNumber);
-
 
 
             //Seeda för parkeringsplatser

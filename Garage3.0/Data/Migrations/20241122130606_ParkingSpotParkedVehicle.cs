@@ -2,10 +2,12 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Garage3._0.Migrations
 {
     /// <inheritdoc />
-    public partial class NewEdited : Migration
+    public partial class ParkingSpotParkedVehicle : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,13 +20,6 @@ namespace Garage3._0.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
-            migrationBuilder.AddColumn<int>(
-                name: "ParkingSpotId",
-                table: "ParkedVehicle",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
             migrationBuilder.AddUniqueConstraint(
                 name: "AK_ParkedVehicle_RegistrationNumber",
                 table: "ParkedVehicle",
@@ -36,25 +31,48 @@ namespace Garage3._0.Migrations
                 {
                     SpotId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RegNumber = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ParkedVehicleRegistrationNumber = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ParkingSpots", x => x.SpotId);
                     table.ForeignKey(
-                        name: "FK_ParkingSpots_ParkedVehicle_RegNumber",
-                        column: x => x.RegNumber,
+                        name: "FK_ParkingSpots_ParkedVehicle_ParkedVehicleRegistrationNumber",
+                        column: x => x.ParkedVehicleRegistrationNumber,
                         principalTable: "ParkedVehicle",
                         principalColumn: "RegistrationNumber");
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_ParkingSpots_RegNumber",
+            migrationBuilder.InsertData(
                 table: "ParkingSpots",
-                column: "RegNumber",
+                columns: new[] { "SpotId", "IsAvailable", "ParkedVehicleRegistrationNumber" },
+                values: new object[,]
+                {
+                    { 1, true, null },
+                    { 2, true, null },
+                    { 3, true, null },
+                    { 4, true, null },
+                    { 5, true, null },
+                    { 6, true, null },
+                    { 7, true, null },
+                    { 8, true, null },
+                    { 9, true, null },
+                    { 10, true, null }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParkedVehicle_RegistrationNumber",
+                table: "ParkedVehicle",
+                column: "RegistrationNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParkingSpots_ParkedVehicleRegistrationNumber",
+                table: "ParkingSpots",
+                column: "ParkedVehicleRegistrationNumber",
                 unique: true,
-                filter: "[RegNumber] IS NOT NULL");
+                filter: "[ParkedVehicleRegistrationNumber] IS NOT NULL");
         }
 
         /// <inheritdoc />
@@ -67,8 +85,8 @@ namespace Garage3._0.Migrations
                 name: "AK_ParkedVehicle_RegistrationNumber",
                 table: "ParkedVehicle");
 
-            migrationBuilder.DropColumn(
-                name: "ParkingSpotId",
+            migrationBuilder.DropIndex(
+                name: "IX_ParkedVehicle_RegistrationNumber",
                 table: "ParkedVehicle");
 
             migrationBuilder.AlterColumn<string>(
