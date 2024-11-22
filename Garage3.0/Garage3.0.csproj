@@ -21,6 +21,13 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\ParkingSpotsController.cs" />
+    <Compile Remove="Controllers\VehiclesController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\ParkedVehicles\Create.cshtml" />
+    <Content Remove="Views\ParkedVehicles\Delete.cshtml" />
+    <Content Remove="Views\ParkedVehicles\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

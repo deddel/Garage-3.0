@@ -100,42 +100,5 @@ namespace Garage3._0.Controllers
             return View("Error");
         }
 
-
-
-        // Action to manage user roles
-        //public async Task<IActionResult> ManageRoles(string userId)
-        //{
-        //    var user = await _userManager.FindByIdAsync(userId);
-        //    if (user == null) return NotFound();
-
-        //    var userRoles = await _userManager.GetRolesAsync(user);
-        //    var allRoles = _roleManager.Roles.ToList();
-
-        //    var model = new ManageRolesViewModel
-        //    {
-        //        UserId = user.Id,
-        //        UserName = user.UserName,
-        //        CurrentRoles = userRoles,
-        //        AllRoles = allRoles
-        //    };
-
-        //    return View(model);
-        //}
-
-        // Action to assign roles to users
-        [HttpPost]
-        public async Task<IActionResult> AssignRole(string userId, string roleName)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null) return NotFound();
-
-            var result = await _userManager.AddToRoleAsync(user, roleName);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("ManageRoles", new { userId = userId });
-            }
-
-            return View("Error");
-        }
     }
 }
