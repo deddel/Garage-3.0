@@ -1,76 +1,54 @@
-﻿@model IEnumerable<Garage3._0.Models.Entities.ParkedVehicle>
+﻿@model IEnumerable<Garage3._0.Models.Entities.ParkingSpot>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Parking Spots";
 }
+<style>
+    .available
+    {
+        background-color:forestgreen;
+    }
 
-<h1>Index</h1>
+    .occupied {
+        background-color: red;
+    }
+   
+</style>
+
+<h1>Parking Spots</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
-    <thead>
-        <tr>
+   <thead>
+     <tr>
             <th>
-                @Html.DisplayNameFor(model => model.RegistrationNumber)
+                @Html.DisplayNameFor(model => model.SpotNumber)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Color)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VehicleModel)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Wheel)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ArrivalTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ApplicationUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VehicleType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ParkingSpotId)
+               @*  @Html.DisplayNameFor(model => model.IsAvailable) *@
+               Status
             </th>
             <th></th>
-        </tr>
-    </thead>
+    </tr>
+    </thead> 
     <tbody>
 @foreach (var item in Model) {
+  
+
+
+
+
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.RegistrationNumber)
+                @Html.DisplayFor(modelItem => item.SpotNumber)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Color)
+                    <div style="width:50px;height:50px;" class="@(item.IsAvailable? "available" : "occupied" )"></div>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Brand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleModel)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Wheel)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ArrivalTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApplicationUser.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleType.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ParkingSpotId)
+                @Html.DisplayFor(modelItem => item.IsAvailable)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

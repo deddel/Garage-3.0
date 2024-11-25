@@ -11,6 +11,7 @@ using Garage3._0.Helper;
 using Garage3._0.Models.ViewModels;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore;
 
 
 namespace Garage3._0.Controllers
@@ -296,6 +297,14 @@ namespace Garage3._0.Controllers
                 }
                 _context.Add(parkedVehicle);
                 await _context.SaveChangesAsync();
+
+                var parkingSpot = await _context.ParkingSpots.FindAsync(parkedVehicle.ParkingSpotId);
+                parkingSpot.IsAvailable = false;
+
+                _context.Update(parkingSpot);
+                await _context.SaveChangesAsync();
+
+
                 TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked.";
                 return RedirectToAction(nameof(Overview));
             }

@@ -4,6 +4,7 @@ using Garage3._0.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241124112315_changedParkingSpot")]
+    partial class changedParkingSpot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,7 +130,7 @@ namespace Garage3._0.Migrations
 
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VehicleModel")
                         .HasMaxLength(20)
@@ -143,84 +146,30 @@ namespace Garage3._0.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
+                    b.HasIndex("ParkingSpotId");
+
                     b.HasIndex("VehicleTypeId");
 
-                    b.ToTable("ParkedVehicle", (string)null);
+                    b.ToTable("ParkedVehicle");
                 });
 
             modelBuilder.Entity("Garage3._0.Models.Entities.ParkingSpot", b =>
                 {
-                    b.Property<int>("SpotId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SpotId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ParkedVehicleRegistrationNumber")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("SpotNumber")
+                        .HasColumnType("int");
 
-                    b.HasKey("SpotId");
-
-                    b.HasIndex("ParkedVehicleRegistrationNumber")
-                        .IsUnique()
-                        .HasFilter("[ParkedVehicleRegistrationNumber] IS NOT NULL");
+                    b.HasKey("Id");
 
                     b.ToTable("ParkingSpots");
-
-                    b.HasData(
-                        new
-                        {
-                            SpotId = 1,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 2,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 3,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 4,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 5,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 6,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 7,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 8,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 9,
-                            IsAvailable = true
-                        },
-                        new
-                        {
-                            SpotId = 10,
-                            IsAvailable = true
-                        });
                 });
 
             modelBuilder.Entity("Garage3._0.Models.Entities.VehicleType", b =>
@@ -237,7 +186,7 @@ namespace Garage3._0.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleType", (string)null);
+                    b.ToTable("VehicleType");
 
                     b.HasData(
                         new
@@ -265,6 +214,36 @@ namespace Garage3._0.Migrations
                             Id = 5,
                             VehicleTypeName = "Motorcycle"
                         });
+                });
+
+            modelBuilder.Entity("Garage3._0.Models.ViewModels.ApplicationUserViewModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Roles")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationUserViewModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -412,6 +391,12 @@ namespace Garage3._0.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Garage3._0.Models.Entities.ParkingSpot", "ParkingSpot")
+                        .WithMany()
+                        .HasForeignKey("ParkingSpotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Garage3._0.Models.Entities.VehicleType", "VehicleType")
                         .WithMany()
                         .HasForeignKey("VehicleTypeId")
@@ -420,17 +405,9 @@ namespace Garage3._0.Migrations
 
                     b.Navigation("ApplicationUser");
 
+                    b.Navigation("ParkingSpot");
+
                     b.Navigation("VehicleType");
-                });
-
-            modelBuilder.Entity("Garage3._0.Models.Entities.ParkingSpot", b =>
-                {
-                    b.HasOne("Garage3._0.Models.Entities.ParkedVehicle", "ParkedVehicle")
-                        .WithOne("ParkingSpot")
-                        .HasForeignKey("Garage3._0.Models.Entities.ParkingSpot", "ParkedVehicleRegistrationNumber")
-                        .HasPrincipalKey("Garage3._0.Models.Entities.ParkedVehicle", "RegistrationNumber");
-
-                    b.Navigation("ParkedVehicle");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -487,12 +464,6 @@ namespace Garage3._0.Migrations
             modelBuilder.Entity("Garage3._0.Models.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("Garage3._0.Models.Entities.ParkedVehicle", b =>
-                {
-                    b.Navigation("ParkingSpot")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

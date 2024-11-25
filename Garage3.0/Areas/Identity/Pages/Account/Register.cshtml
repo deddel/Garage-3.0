@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "Register";
 }
+<script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
+
+
 
 <h1>@ViewData["Title"]</h1>
 
@@ -27,9 +30,15 @@
             <span asp-validation-for="Input.LName" class="text-danger"></span>
         </div>
         <div class="form-floating mb-3">
-            <input asp-for="Input.SocialSecurityNr" class="form-control" autocomplete="off" aria-required="true" placeholder="Last name" />
+            <input asp-for="Input.SocialSecurityNr" class="form-control" autocomplete="off" aria-required="true" id="socialSecurityNr" placeholder="yymmdd-xxxx" />
             <label asp-for="Input.SocialSecurityNr" class="text-dark">Social Security Number</label>
             <span asp-validation-for="Input.SocialSecurityNr" class="text-danger"></span>
+            <script>
+                // Apply the input mask for Social Security Number
+                Inputmask("999999-9999", {
+                    placeholder: "_"
+                }).mask(document.getElementById("socialSecurityNr"));
+            </script>
         </div>
         <div class="form-floating mb-3">
             <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
