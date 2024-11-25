@@ -6,54 +6,54 @@
 
 <h1>Statistics</h1>
 
-<div>
+<div class="wrapper">
     <h4>View statistical data for the garage</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class = "width-helper">
             @Html.DisplayNameFor(model => model.Cars)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="width-helper">
             @Html.DisplayFor(model => model.Cars)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="width-helper">
             @Html.DisplayNameFor(model => model.Motorcycles)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="width-helper">
             @Html.DisplayFor(model => model.Motorcycles)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="width-helper">
             @Html.DisplayNameFor(model => model.Buses)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="width-helper">
             @Html.DisplayFor(model => model.Buses)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="width-helper">
             @Html.DisplayNameFor(model => model.Boats)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="width-helper">
             @Html.DisplayFor(model => model.Boats)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="width-helper">
             @Html.DisplayNameFor(model => model.Airplanes)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="width-helper">
             @Html.DisplayFor(model => model.Airplanes)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="width-helper">
             Wheels in the garage
         </dt>
-        <dd class="col-sm-10">
+        <dd class="width-helper">
             @Html.DisplayFor(model => model.Wheels)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="width-helper">
             Total money earned
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Sum)
+        <dd class="width-helper">
+            @Html.DisplayFor(model => model.Sum) KR
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Overview">Back to List</a>
+    <a asp-action="Overview" class="tiny-button red">&larr; Back to List</a>
 </div>

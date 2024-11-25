@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Garage3._0.Models.Entities.ParkingSpot>
+
+@{
+    ViewData["Title"] = "Parking Spots";
+}
+<style>
+    .available
+    {
+        background-color:forestgreen;
+    }
+
+    .occupied {
+        background-color: red;
+    }
+   
+</style>
+
+<h1>Parking Spots</h1>
+
+<table class="table">
+   <thead>
+     <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SpotId)
+            </th>
+            <th>
+               @*  @Html.DisplayNameFor(model => model.IsAvailable) *@
+               Status
+            </th>
+            <th></th>
+    </tr>
+    </thead> 
+    <tbody>
+@foreach (var item in Model) {
+  
+
+
+
+
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpotId)
+            </td>
+            <td>
+                    <div style="width:50px;height:50px;" class="@(item.IsAvailable? "available" : "occupied" )"></div>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsAvailable)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

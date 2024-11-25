@@ -1,4 +1,6 @@
 using Garage3._0.Data;
+using Garage3._0.Extensions;
+using Garage3._0.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +9,7 @@ namespace Garage3._0
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +19,12 @@ namespace Garage3._0
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+         
+
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -34,6 +40,8 @@ namespace Garage3._0
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            await app.SeedDataAsync();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

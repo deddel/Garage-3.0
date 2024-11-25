@@ -10,6 +10,9 @@ using Garage3._0.Models.Entities;
 using Garage3._0.Helper;
 using Garage3._0.Models.ViewModels;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore;
+
 
 namespace Garage3._0.Controllers
 {
@@ -87,7 +90,7 @@ namespace Garage3._0.Controllers
 
             var filtered = type is null ?
                 _context.ParkedVehicle :
-                _context.ParkedVehicle.Where(m => (int)m.VehicleType == type);
+                _context.ParkedVehicle.Where(m => m.VehicleType.Id == type);
 
             filtered = string.IsNullOrWhiteSpace(regNr) ?
                 filtered :
@@ -135,7 +138,7 @@ namespace Garage3._0.Controllers
 
             filtered = type is null ?
                filtered :
-               filtered.Where(m => (int)m.Type == type);
+               filtered.Where(m => m.Type.Id == type);
 
             filtered = string.IsNullOrWhiteSpace(regNr) ?
                 filtered :
@@ -152,39 +155,29 @@ namespace Garage3._0.Controllers
 
             return View(nameof(Overview), await filtered.ToListAsync());
         }
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> StatisticsView()
         {
-            var parkedVehicles = await _context.ParkedVehicle.Select(p => new StatisticsViewModel
+            var vehicleTypes = await _context.VehicleType.ToListAsync();
+            var parkedVehicles = await _context.ParkedVehicle.Select(p => new
             {
                 Wheel = p.Wheel,
                 Color = p.Color,
                 Brand = p.Brand,
                 Model = p.VehicleModel,
-                Type = p.VehicleType,
+                Type = p.VehicleType.VehicleTypeName,
                 ParkingFee = ParkingHelper.ParkingFee(p.ArrivalTime, DateTime.Now)
             })
             .ToListAsync();
 
-            var type = parkedVehicles.GroupBy(p => p.Type);
-            string cars = "0";
-            string boats = "0";
-            string motorcycles = "0";
-            string buses = "0";
-            string airplanes = "0";
-            foreach (var t in type)
-            {
-                if (t.Key == VehicleType.Car)
-                    cars = $"{t.Count()}";
-                else if (t.Key == VehicleType.Boat)
-                    boats = $"{t.Count()}";
-                else if (t.Key == VehicleType.Motorcycle)
-                    motorcycles = $"{t.Count()}";
-                else if (t.Key == VehicleType.Bus)
-                    buses = $"{t.Count()}";
-                else
-                    airplanes = $"{t.Count()}";
-            }
+            var typeCounts = parkedVehicles
+                .GroupBy(p => p.Type)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var vehicleTypeCounts = vehicleTypes.ToDictionary(
+                vt => vt.VehicleTypeName,
+                vt => typeCounts.GetValueOrDefault(vt.VehicleTypeName, 0).ToString());
+
             int amountWheels = parkedVehicles.Sum(s => s.Wheel);
             decimal sum = 0;
             foreach (var s in parkedVehicles)
@@ -194,21 +187,23 @@ namespace Garage3._0.Controllers
 
             var displayStats = new StatisticsDisplayViewModel
             {
-                Cars = cars,
-                Boats = boats,
-                Buses = buses,
-                Motorcycles = motorcycles,
-                Airplanes = airplanes,
+                Cars = vehicleTypeCounts.GetValueOrDefault("Car", "0"),
+                Boats = vehicleTypeCounts.GetValueOrDefault("Boat", "0"),
+                Buses = vehicleTypeCounts.GetValueOrDefault("Bus", "0"),
+                Motorcycles = vehicleTypeCounts.GetValueOrDefault("Motorcycle", "0"),
+                Airplanes = vehicleTypeCounts.GetValueOrDefault("Airplane", "0"),
                 Wheels = amountWheels,
                 Sum = sum
             };
 
             return View(displayStats);
         }
-
+        [Authorize]
         public async Task<IActionResult> Overview(string sortOrder)
         {
-            var model = _context.ParkedVehicle.Select(p => new ParkedViewModel
+            var applicationDbContext = _context.ParkedVehicle.Include(p => p.ApplicationUser).Include(p => p.VehicleType);
+
+            var model = applicationDbContext.Select(p => new ParkedViewModel
             {
                 Id = p.Id,
                 Type = p.VehicleType,
@@ -248,7 +243,7 @@ namespace Garage3._0.Controllers
 
             return View(await order.ToListAsync());
         }
-
+        [Authorize]
         // GET: ParkedVehicles/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -258,6 +253,8 @@ namespace Garage3._0.Controllers
             }
 
             var parkedVehicle = await _context.ParkedVehicle
+                .Include(p => p.ApplicationUser)
+                .Include(p => p.VehicleType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (parkedVehicle == null)
             {
@@ -268,9 +265,17 @@ namespace Garage3._0.Controllers
         }
 
         // GET: ParkedVehicles/Park
+        [HttpGet]
+        [Authorize]
         public IActionResult Park()
         {
-            return View();
+            ViewData["ParkingSpotId"] = new SelectList(
+                _context.ParkingSpots.Where(ps => ps.IsAvailable),
+                "SpotId",
+                "SpotId");
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id");
+
+            return View(new ParkedVehicleViewModel());
         }
 
         // POST: ParkedVehicles/Park
@@ -278,29 +283,69 @@ namespace Garage3._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,VehicleModel,Wheel")] ParkedVehicle parkedVehicle)
+        [Authorize]
+        public async Task<IActionResult> Park(ParkedVehicleViewModel model)
         {
             if (ModelState.IsValid)
             {
-                DateTime dateTime = DateTime.Now;
-                dateTime = new DateTime(
-                    dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond),
-                    dateTime.Kind
-                );
-                parkedVehicle.ArrivalTime = dateTime;
-                if (parkedVehicle.RegistrationNumber != null)
+                
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null)
                 {
-                    parkedVehicle.RegistrationNumber = parkedVehicle.RegistrationNumber.ToUpper();
+                    ModelState.AddModelError(string.Empty, "User is not logged in.");
+                    return RedirectToAction("Login", "Account");  // Redirect to login page
                 }
+
+                //Create a ParkedVehicle
+                var parkedVehicle = new ParkedVehicle
+                {
+                    VehicleTypeId = model.VehicleTypeId,
+                    RegistrationNumber = model.RegistrationNumber?.ToUpper(),
+                    Color = model.Color,
+                    Brand = model.Brand,
+                    VehicleModel = model.VehicleModel,
+                    Wheel = model.Wheel,
+                    ArrivalTime = DateTime.Now,
+                    ApplicationUserId = userId
+                };
+
+                // Find the selected parking spot
+                var parkingSpot = await _context.ParkingSpots.FindAsync(model.ParkingSpotId);
+                // Check if the parkingspot is available
+                if (parkingSpot == null || !parkingSpot.IsAvailable)
+                {
+                    ModelState.AddModelError("ParkingSpotId", "Selected parking spot is not available.");
+                    ViewData["ParkingSpotId"] = new SelectList(
+                        _context.ParkingSpots.Where(ps => ps.IsAvailable),
+                        "SpotId",
+                        "SpotId"
+                    );
+                    ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Name");
+                    return View(model);
+                }
+
+                // Associate the vehicle with the parking spot and amrk it as occupied
+                parkedVehicle.ParkingSpot = parkingSpot;
+                parkingSpot.IsAvailable = false;
+
                 _context.Add(parkedVehicle);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked.";
+
+                TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked in parkingspot {parkingSpot.SpotId}.";
                 return RedirectToAction(nameof(Overview));
+                
             }
-            return View(parkedVehicle);
+
+            // Re-populate ViewData for the dropdowns if validation fails
+
+            ViewData["ParkingSpotId"] = new SelectList(_context.ParkingSpots.Where(ps => ps.IsAvailable), "SpotId", "SpotId");
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Name");
+            return View(model);
         }
 
         // GET: ParkedVehicles/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -313,21 +358,26 @@ namespace Garage3._0.Controllers
             {
                 return NotFound();
             }
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
             return View(parkedVehicle);
         }
 
         // POST: ParkedVehicles/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ArrivalTime")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ArrivalTime,ApplicationUserId,VehicleTypeId")] ParkedVehicle parkedVehicle)
         {
             if (id != parkedVehicle.Id)
             {
                 return NotFound();
             }
 
+            ModelState.Remove("ApplicationUser");
+            ModelState.Remove("VehicleType");
             if (ModelState.IsValid)
             {
                 try
@@ -349,10 +399,13 @@ namespace Garage3._0.Controllers
                 }
                 return RedirectToAction(nameof(Overview));
             }
+            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
             return View(parkedVehicle);
         }
 
         // GET: ParkedVehicles/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -361,6 +414,8 @@ namespace Garage3._0.Controllers
             }
 
             var parkedVehicle = await _context.ParkedVehicle
+                .Include(p => p.ApplicationUser)
+                .Include(p => p.VehicleType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (parkedVehicle == null)
             {
@@ -371,14 +426,22 @@ namespace Garage3._0.Controllers
         }
 
         // POST: ParkedVehicles/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
+            var parkedVehicle = await _context.ParkedVehicle
+                .Include(pv => pv.ParkingSpot)
+                .FirstOrDefaultAsync(pv =>pv.Id == id);
             string? regId = parkedVehicle?.RegistrationNumber;
+
+            var parkingSpot = parkedVehicle.ParkingSpot;
             if (parkedVehicle != null)
             {
+                // Mark the parkingspot as available
+                if (parkingSpot != null) { parkingSpot.IsAvailable = true; }
+                // Remove vehicle
                 _context.ParkedVehicle.Remove(parkedVehicle);
             }
 
@@ -386,7 +449,7 @@ namespace Garage3._0.Controllers
             TempData["SuccessMessage"] = $"Vehicle {regId} successfully unparked.";
             return RedirectToAction(nameof(Overview));
         }
-
+        [Authorize]
         // GET: ParkedVehicles/Receipt/5
         public async Task<IActionResult> ReceiptView(int? id)
         {

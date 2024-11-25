@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -6,7 +7,7 @@
     <title>@ViewData["Title"] - Garage3._0</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Garage3._0.styles.css" asp-append-version="true" />
+   @*  <link rel="stylesheet" href="~/Garage3._0.styles.css" asp-append-version="true" /> *@
 </head>
 <body>
     <header>
@@ -19,16 +20,28 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        @if (User.Identity.IsAuthenticated)
+                        {
                         <li navigation-active-for="Index" class="nav-item">
                             <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li navigation-active-for="Overview" class="nav-item">
                             <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "Overview" ? "active" : "")" asp-area="" asp-controller="ParkedVehicles" asp-action="Overview">Overview</a>
                         </li>
+                        @if (User.IsInRole("Admin")){
                         <li navigation-active-for="StatisticsView" class="nav-item">
                             <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "StatisticsView" ? "active" : "")" asp-area="" asp-controller="ParkedVehicles" asp-action="StatisticsView">Stats</a>
                         </li>
+                        <li navigation-active-for="ControlPanel" class="nav-item">
+                            <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "ControlPanel" ? "active" : "")" asp-area="" asp-controller="Admin" asp-action="ControlPanel">Admin Panel</a>
+                        </li>
+                        }
+                        <li navigation-active-for="ControlPanel" class="nav-item">
+                            <a class="nav-link hover-button @(ViewContext.RouteData.Values["Action"]?.ToString() == "ControlPanel" ? "active" : "")" asp-area="" asp-controller="ParkingSpots" asp-action="Index">ParkingSpots</a>
+                        </li>
+                        }
                     </ul>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -45,6 +58,9 @@
             &copy; 2024 - Garage3.0
         </div>
     </footer>
+@*     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

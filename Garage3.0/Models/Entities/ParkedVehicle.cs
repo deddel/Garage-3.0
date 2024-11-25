@@ -8,8 +8,6 @@ namespace Garage3._0.Models.Entities
     {
         public int Id { get; set; }
         [Required]
-        public VehicleType VehicleType { get; set; }
-        [Required]
         [RegularExpression(@"^[A-Za-z]{3}[0-9]{3}$", ErrorMessage = "Registration number must follow the format ABC123.")]
         [UniqueRegistrationNumber(typeof(ApplicationDbContext), ErrorMessage = "Registration number must be unique.")]
 
@@ -23,5 +21,17 @@ namespace Garage3._0.Models.Entities
         [Range(0, 100, ErrorMessage = "It must be a non-negative number.")]
         public int Wheel { get; set; }
         public DateTime ArrivalTime { get; set; }
+
+        //Foreign Key
+        public string ApplicationUserId { get; set; }
+        //Navigational Property
+        public ApplicationUser ApplicationUser { get; set; }
+        //Foreign Key
+        public int VehicleTypeId { get; set; }
+        //Nav prop
+        [Required]
+        public VehicleType VehicleType { get; set; }
+        //Nav prop
+        public ParkingSpot ParkingSpot { get; set; } 
     }
 }

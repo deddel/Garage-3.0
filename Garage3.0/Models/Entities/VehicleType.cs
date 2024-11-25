@@ -1,11 +1,8 @@
 ﻿namespace Garage3._0.Models.Entities
 {
-    public enum VehicleType
+    public class VehicleType
     {
-        Airplane,
-        Boat,
-        Bus,
-        Car,
-        Motorcycle
+        public int Id {  get; set; }
+        public string VehicleTypeName { get; set; }
     }
 }
