@@ -9,22 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\ApplicationUserViewModels\**" />
-    <Compile Remove="Views\ParkingSpots\**" />
     <Compile Remove="Views\Vehicles\**" />
-    <Content Remove="Views\ApplicationUserViewModels\**" />
-    <Content Remove="Views\ParkingSpots\**" />
     <Content Remove="Views\Vehicles\**" />
-    <EmbeddedResource Remove="Views\ApplicationUserViewModels\**" />
-    <EmbeddedResource Remove="Views\ParkingSpots\**" />
     <EmbeddedResource Remove="Views\Vehicles\**" />
-    <None Remove="Views\ApplicationUserViewModels\**" />
-    <None Remove="Views\ParkingSpots\**" />
     <None Remove="Views\Vehicles\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\ParkingSpotsController.cs" />
     <Compile Remove="Controllers\VehiclesController.cs" />
     <Compile Remove="Models\ViewModels\ManageRolesViewModel.cs" />
     <Compile Remove="Models\ViewModels\StatisticsViewModel.cs" />
@@ -44,6 +35,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
 </Project>

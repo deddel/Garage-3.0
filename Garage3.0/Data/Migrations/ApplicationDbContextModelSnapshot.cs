@@ -124,7 +124,7 @@ namespace Garage3._0.Migrations
 
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("VehicleModel")
                         .HasMaxLength(20)

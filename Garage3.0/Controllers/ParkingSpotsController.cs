@@ -34,7 +34,7 @@ namespace Garage3._0.Controllers
             }
 
             var parkingSpot = await _context.ParkingSpots
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.SpotId == id);
             if (parkingSpot == null)
             {
                 return NotFound();
@@ -88,7 +88,7 @@ namespace Garage3._0.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,SpotNumber,IsAvailable")] ParkingSpot parkingSpot)
         {
-            if (id != parkingSpot.Id)
+            if (id != parkingSpot.SpotId)
             {
                 return NotFound();
             }
@@ -102,7 +102,7 @@ namespace Garage3._0.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ParkingSpotExists(parkingSpot.Id))
+                    if (!ParkingSpotExists(parkingSpot.SpotId))
                     {
                         return NotFound();
                     }
@@ -125,7 +125,7 @@ namespace Garage3._0.Controllers
             }
 
             var parkingSpot = await _context.ParkingSpots
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.SpotId == id);
             if (parkingSpot == null)
             {
                 return NotFound();
@@ -151,7 +151,7 @@ namespace Garage3._0.Controllers
 
         private bool ParkingSpotExists(int id)
         {
-            return _context.ParkingSpots.Any(e => e.Id == id);
+            return _context.ParkingSpots.Any(e => e.SpotId == id);
         }
     }
 }

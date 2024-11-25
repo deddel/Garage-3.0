@@ -8,27 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Garage3._0.Migrations
 {
     /// <inheritdoc />
-    public partial class changedParkingSpot : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "ApplicationUserViewModel",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Roles = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApplicationUserViewModel", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -69,20 +53,6 @@ namespace Garage3._0.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ParkingSpots",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SpotNumber = table.Column<int>(type: "int", nullable: false),
-                    IsAvailable = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ParkingSpots", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -210,29 +180,23 @@ namespace Garage3._0.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RegistrationNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RegistrationNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Brand = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     VehicleModel = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Wheel = table.Column<int>(type: "int", nullable: false),
                     ArrivalTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    VehicleTypeId = table.Column<int>(type: "int", nullable: false),
-                    ParkingSpotId = table.Column<int>(type: "int", nullable: false)
+                    VehicleTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ParkedVehicle", x => x.Id);
+                    table.UniqueConstraint("AK_ParkedVehicle_RegistrationNumber", x => x.RegistrationNumber);
                     table.ForeignKey(
                         name: "FK_ParkedVehicle_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ParkedVehicle_ParkingSpots_ParkingSpotId",
-                        column: x => x.ParkingSpotId,
-                        principalTable: "ParkingSpots",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -241,6 +205,42 @@ namespace Garage3._0.Migrations
                         principalTable: "VehicleType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ParkingSpots",
+                columns: table => new
+                {
+                    SpotId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ParkedVehicleRegistrationNumber = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ParkingSpots", x => x.SpotId);
+                    table.ForeignKey(
+                        name: "FK_ParkingSpots_ParkedVehicle_ParkedVehicleRegistrationNumber",
+                        column: x => x.ParkedVehicleRegistrationNumber,
+                        principalTable: "ParkedVehicle",
+                        principalColumn: "RegistrationNumber");
+                });
+
+            migrationBuilder.InsertData(
+                table: "ParkingSpots",
+                columns: new[] { "SpotId", "IsAvailable", "ParkedVehicleRegistrationNumber" },
+                values: new object[,]
+                {
+                    { 1, true, null },
+                    { 2, true, null },
+                    { 3, true, null },
+                    { 4, true, null },
+                    { 5, true, null },
+                    { 6, true, null },
+                    { 7, true, null },
+                    { 8, true, null },
+                    { 9, true, null },
+                    { 10, true, null }
                 });
 
             migrationBuilder.InsertData(
@@ -300,22 +300,27 @@ namespace Garage3._0.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ParkedVehicle_ParkingSpotId",
+                name: "IX_ParkedVehicle_RegistrationNumber",
                 table: "ParkedVehicle",
-                column: "ParkingSpotId");
+                column: "RegistrationNumber",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ParkedVehicle_VehicleTypeId",
                 table: "ParkedVehicle",
                 column: "VehicleTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParkingSpots_ParkedVehicleRegistrationNumber",
+                table: "ParkingSpots",
+                column: "ParkedVehicleRegistrationNumber",
+                unique: true,
+                filter: "[ParkedVehicleRegistrationNumber] IS NOT NULL");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ApplicationUserViewModel");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -332,16 +337,16 @@ namespace Garage3._0.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ParkedVehicle");
+                name: "ParkingSpots");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "ParkedVehicle");
 
             migrationBuilder.DropTable(
-                name: "ParkingSpots");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "VehicleType");
