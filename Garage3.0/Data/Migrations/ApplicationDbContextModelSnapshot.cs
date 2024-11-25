@@ -122,9 +122,6 @@ namespace Garage3._0.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("ParkingSpotId")
-                        .HasColumnType("int");
-
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -142,6 +139,9 @@ namespace Garage3._0.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("RegistrationNumber")
+                        .IsUnique();
 
                     b.HasIndex("VehicleTypeId");
 

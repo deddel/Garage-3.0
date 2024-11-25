@@ -29,13 +29,16 @@ namespace Garage3._0.Data
                 new VehicleType { Id = 4, VehicleTypeName = "Car" },
                 new VehicleType { Id = 5, VehicleTypeName = "Motorcycle" });
 
+            // Enforce uniqueness for RegistrationNumber in ParkedVehicle
+            modelBuilder.Entity<ParkedVehicle>()
+                .HasIndex(p => p.RegistrationNumber)
+                .IsUnique();
 
             modelBuilder.Entity<ParkingSpot>()
                 .HasOne(p => p.ParkedVehicle)
                 .WithOne(ps => ps.ParkingSpot)
                 .HasForeignKey<ParkingSpot>(ps => ps.ParkedVehicleRegistrationNumber) //Främmande nyckel
                 .HasPrincipalKey<ParkedVehicle>(p => p.RegistrationNumber);
-
 
 
             //Seeda för parkeringsplatser
@@ -56,6 +59,6 @@ namespace Garage3._0.Data
             //    new ParkedVehicle { Id = 3, VehicleType = VehicleType.Motorcycle, RegistrationNumber = "LDT432", Color = "Green", Brand = "Honda", VehicleModel = "CGI", Wheel = 2, ArrivalTime = DateTime.ParseExact("23/05/2011 09:42:17", "dd/MM/yyyy h:m:s", null) }
             //);
         }
-        //public DbSet<Garage3._0.Models.ViewModels.ApplicationUserViewModel> ApplicationUserViewModel { get; set; } = default!;
+        
     }
 }
