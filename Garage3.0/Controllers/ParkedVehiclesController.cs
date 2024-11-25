@@ -265,11 +265,17 @@ namespace Garage3._0.Controllers
         }
 
         // GET: ParkedVehicles/Park
+        [HttpGet]
+        [Authorize]
         public IActionResult Park()
         {
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["ParkingSpotId"] = new SelectList(
+                _context.ParkingSpots.Where(ps => ps.IsAvailable),
+                "SpotId",
+                "SpotId");
             ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id");
-            return View();
+
+            return View(new ParkedVehicleViewModel());
         }
 
         // POST: ParkedVehicles/Park
@@ -278,39 +284,64 @@ namespace Garage3._0.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Park([Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ApplicationUserId,VehicleTypeId,ParkingSpotId")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Park(ParkedVehicleViewModel model)
         {
-            ModelState.Remove("ApplicationUser");
-            ModelState.Remove("VehicleType");
-            ModelState.Remove("ParkingSpot");
             if (ModelState.IsValid)
             {
-                DateTime dateTime = DateTime.Now;
-                dateTime = new DateTime(
-                    dateTime.Ticks - (dateTime.Ticks % TimeSpan.TicksPerSecond),
-                    dateTime.Kind
-                );
-                parkedVehicle.ArrivalTime = dateTime;
-                if (parkedVehicle.RegistrationNumber != null)
+                
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null)
                 {
-                    parkedVehicle.RegistrationNumber = parkedVehicle.RegistrationNumber.ToUpper();
+                    ModelState.AddModelError(string.Empty, "User is not logged in.");
+                    return RedirectToAction("Login", "Account");  // Redirect to login page
                 }
+
+                //Create a ParkedVehicle
+                var parkedVehicle = new ParkedVehicle
+                {
+                    VehicleTypeId = model.VehicleTypeId,
+                    RegistrationNumber = model.RegistrationNumber?.ToUpper(),
+                    Color = model.Color,
+                    Brand = model.Brand,
+                    VehicleModel = model.VehicleModel,
+                    Wheel = model.Wheel,
+                    ArrivalTime = DateTime.Now,
+                    ApplicationUserId = userId
+                };
+
+                // Find the selected parking spot
+                var parkingSpot = await _context.ParkingSpots.FindAsync(model.ParkingSpotId);
+                // Check if the parkingspot is available
+                if (parkingSpot == null || !parkingSpot.IsAvailable)
+                {
+                    ModelState.AddModelError("ParkingSpotId", "Selected parking spot is not available.");
+                    ViewData["ParkingSpotId"] = new SelectList(
+                        _context.ParkingSpots.Where(ps => ps.IsAvailable),
+                        "SpotId",
+                        "SpotId"
+                    );
+                    ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Name");
+                    return View(model);
+                }
+
+                // Associate the vehicle with the parking spot and amrk it as occupied
+                parkedVehicle.ParkingSpot = parkingSpot;
+                parkingSpot.IsAvailable = false;
+
                 _context.Add(parkedVehicle);
                 await _context.SaveChangesAsync();
 
-                var parkingSpot = await _context.ParkingSpots.FindAsync(parkedVehicle.ParkingSpotId);
-                parkingSpot.IsAvailable = false;
-
-                _context.Update(parkingSpot);
-                await _context.SaveChangesAsync();
-
-
-                TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked.";
+                TempData["SuccessMessage"] = $"Vehicle {parkedVehicle.RegistrationNumber} successfully parked in parkingspot {parkingSpot.SpotId}.";
                 return RedirectToAction(nameof(Overview));
+                
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", parkedVehicle.ApplicationUserId);
-            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Id", parkedVehicle.VehicleTypeId);
-            return View(parkedVehicle);
+
+            // Re-populate ViewData for the dropdowns if validation fails
+
+            ViewData["ParkingSpotId"] = new SelectList(_context.ParkingSpots.Where(ps => ps.IsAvailable), "SpotId", "SpotId");
+            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Name");
+            return View(model);
         }
 
         // GET: ParkedVehicles/Edit/5
@@ -399,10 +430,17 @@ namespace Garage3._0.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
+            var parkedVehicle = await _context.ParkedVehicle
+                .Include(pv => pv.ParkingSpot)
+                .FirstOrDefaultAsync(pv =>pv.Id == id);
             string? regId = parkedVehicle?.RegistrationNumber;
+
+            var parkingSpot = parkedVehicle.ParkingSpot;
             if (parkedVehicle != null)
             {
+                // Mark the parkingspot as available
+                if (parkingSpot != null) { parkingSpot.IsAvailable = true; }
+                // Remove vehicle
                 _context.ParkedVehicle.Remove(parkedVehicle);
             }
 

@@ -48,42 +48,57 @@ namespace Garage3._0.Controllers
             return View(userViewModels); // Return a view that lists the users
         }
 
-        // Action to manage user roles
-        public async Task<IActionResult> ManageRoles(string userId)
+        public async Task<IActionResult> AdminToggle(string Id)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(Id);
             if (user == null) return NotFound();
 
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var allRoles = _roleManager.Roles.ToList();
-            Console.WriteLine(allRoles.ToString);
-            Console.WriteLine(userRoles.ToString);
-
-            var model = new ManageRolesViewModel
+            var roles = await _userManager.GetRolesAsync(user);
+            var isAdmin = roles.Contains("Admin");
+            IdentityResult result;
+            if (isAdmin)
             {
-                UserId = user.Id,
-                UserName = user.UserName,
-                CurrentRoles = userRoles,
-                AllRoles = allRoles
-            };
+                result = await _userManager.RemoveFromRoleAsync(user, "Admin");
+            }
+            else
+            {
+                result = await _userManager.AddToRoleAsync(user, "Admin");
 
-            return View(model);
-        }
-
-        // Action to assign roles to users
-        [HttpPost]
-        public async Task<IActionResult> AssignRole(string userId, string roleName)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null) return NotFound();
-
-            var result = await _userManager.AddToRoleAsync(user, roleName);
+            }
             if (result.Succeeded)
             {
-                return RedirectToAction("ManageRoles", new { userId = userId });
+                //TempData["SuccessMessage"] = isAdmin ? "Admin role removed." : "Admin role added.";
+                return RedirectToAction(nameof(ControlPanel));
             }
 
             return View("Error");
         }
+
+        public async Task<IActionResult> MemberToggle(string Id)
+        {
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null) return NotFound();
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var isMember = roles.Contains("Member");
+            IdentityResult result;
+            if (isMember)
+            {
+                result = await _userManager.RemoveFromRoleAsync(user, "Member");
+            }
+            else
+            {
+                result = await _userManager.AddToRoleAsync(user, "Member");
+
+            }
+            if (result.Succeeded)
+            {
+                //TempData["SuccessMessage"] = isMember ? "Member role removed." : "Member role added.";
+                return RedirectToAction(nameof(ControlPanel));
+            }
+
+            return View("Error");
+        }
+
     }
 }

@@ -118,8 +118,6 @@ namespace Garage3._0.Areas.Identity.Pages.Account
            // [Display(Name = "Social Security Number")]
             public string SocialSecurityNr { get; set; }
 
-           
-
 
         }
 
@@ -150,6 +148,18 @@ namespace Garage3._0.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+                    // Assign the "Member" role to the user
+                    var addRoleResult = await _userManager.AddToRoleAsync(user, "Member");
+                    if (!addRoleResult.Succeeded)
+                    {
+                        foreach (var error in addRoleResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, $"Role assignment error: {error.Description}");
+                        }
+                        return Page();
+                    }
+
+                    // Email confirmation process
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
