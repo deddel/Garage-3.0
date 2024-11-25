@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Garage3._0.Validation;
 
 namespace Garage3._0.Areas.Identity.Pages.Account
 {
@@ -76,6 +77,7 @@ namespace Garage3._0.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
+            [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Please enter a valid email address.")]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
@@ -106,11 +108,14 @@ namespace Garage3._0.Areas.Identity.Pages.Account
 
             [Required]
             [StringLength(40, ErrorMessage = "The {0} must be at least {2} and and max {1} characters long.", MinimumLength = 2)]
+            [DifferentNames]
             [Display(Name = "Last name")]
             public string LName { get; set; }
 
             [Required]
-            [Display(Name = "Social Security Number")]
+            //[StringLength(12, ErrorMessage = "The {0} must be at least {2} and and max {1} characters long.", MinimumLength = 2)]
+            [UniqueSSN]
+           // [Display(Name = "Social Security Number")]
             public string SocialSecurityNr { get; set; }
 
 

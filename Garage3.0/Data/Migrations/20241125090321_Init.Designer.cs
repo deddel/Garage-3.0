@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3._0.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241119142829_Big")]
-    partial class Big
+    [Migration("20241125090321_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -127,7 +127,7 @@ namespace Garage3._0.Migrations
 
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("VehicleModel")
                         .HasMaxLength(20)
@@ -143,9 +143,87 @@ namespace Garage3._0.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
+                    b.HasIndex("RegistrationNumber")
+                        .IsUnique();
+
                     b.HasIndex("VehicleTypeId");
 
                     b.ToTable("ParkedVehicle");
+                });
+
+            modelBuilder.Entity("Garage3._0.Models.Entities.ParkingSpot", b =>
+                {
+                    b.Property<int>("SpotId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SpotId"));
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ParkedVehicleRegistrationNumber")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("SpotId");
+
+                    b.HasIndex("ParkedVehicleRegistrationNumber")
+                        .IsUnique()
+                        .HasFilter("[ParkedVehicleRegistrationNumber] IS NOT NULL");
+
+                    b.ToTable("ParkingSpots");
+
+                    b.HasData(
+                        new
+                        {
+                            SpotId = 1,
+                            IsAvailable = true
+                        },
+                        new
+                        {
+                            SpotId = 2,
+                            IsAvailable = true
+                        },
+                        new
+                        {
+                            SpotId = 3,
+                            IsAvailable = true
+                        },
+                        new
+                        {
+                            SpotId = 4,
+                            IsAvailable = true
+                        },
+                        new
+                        {
+                            SpotId = 5,
+                            IsAvailable = true
+                        },
+                        new
+                        {
+                            SpotId = 6,
+                            IsAvailable = true
+                        },
+                        new
+                        {
+                            SpotId = 7,
+                            IsAvailable = true
+                        },
+                        new
+                        {
+                            SpotId = 8,
+                            IsAvailable = true
+                        },
+                        new
+                        {
+                            SpotId = 9,
+                            IsAvailable = true
+                        },
+                        new
+                        {
+                            SpotId = 10,
+                            IsAvailable = true
+                        });
                 });
 
             modelBuilder.Entity("Garage3._0.Models.Entities.VehicleType", b =>
@@ -348,6 +426,16 @@ namespace Garage3._0.Migrations
                     b.Navigation("VehicleType");
                 });
 
+            modelBuilder.Entity("Garage3._0.Models.Entities.ParkingSpot", b =>
+                {
+                    b.HasOne("Garage3._0.Models.Entities.ParkedVehicle", "ParkedVehicle")
+                        .WithOne("ParkingSpot")
+                        .HasForeignKey("Garage3._0.Models.Entities.ParkingSpot", "ParkedVehicleRegistrationNumber")
+                        .HasPrincipalKey("Garage3._0.Models.Entities.ParkedVehicle", "RegistrationNumber");
+
+                    b.Navigation("ParkedVehicle");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -402,6 +490,12 @@ namespace Garage3._0.Migrations
             modelBuilder.Entity("Garage3._0.Models.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("Garage3._0.Models.Entities.ParkedVehicle", b =>
+                {
+                    b.Navigation("ParkingSpot")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
