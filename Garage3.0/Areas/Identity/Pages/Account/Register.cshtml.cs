@@ -115,6 +115,7 @@ namespace Garage3._0.Areas.Identity.Pages.Account
             [Required]
             //[StringLength(12, ErrorMessage = "The {0} must be at least {2} and and max {1} characters long.", MinimumLength = 2)]
             [UniqueSSN]
+            [RegularExpression(@"^\d{6}-\d{4}$", ErrorMessage = "Enter in this format YYMMDD-XXXX")]
            // [Display(Name = "Social Security Number")]
             public string SocialSecurityNr { get; set; }
 

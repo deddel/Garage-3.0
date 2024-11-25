@@ -155,7 +155,7 @@ namespace Garage3._0.Controllers
 
             return View(nameof(Overview), await filtered.ToListAsync());
         }
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> StatisticsView()
         {
             var vehicleTypes = await _context.VehicleType.ToListAsync();
@@ -198,7 +198,7 @@ namespace Garage3._0.Controllers
 
             return View(displayStats);
         }
-
+        [Authorize]
         public async Task<IActionResult> Overview(string sortOrder)
         {
             var applicationDbContext = _context.ParkedVehicle.Include(p => p.ApplicationUser).Include(p => p.VehicleType);
@@ -243,7 +243,7 @@ namespace Garage3._0.Controllers
 
             return View(await order.ToListAsync());
         }
-
+        [Authorize]
         // GET: ParkedVehicles/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -366,9 +366,10 @@ namespace Garage3._0.Controllers
         // POST: ParkedVehicles/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ArrivalTime")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RegistrationNumber,Color,Brand,VehicleModel,Wheel,ArrivalTime,ApplicationUserId,VehicleTypeId")] ParkedVehicle parkedVehicle)
         {
             if (id != parkedVehicle.Id)
             {
@@ -404,7 +405,7 @@ namespace Garage3._0.Controllers
         }
 
         // GET: ParkedVehicles/Delete/5
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -425,9 +426,9 @@ namespace Garage3._0.Controllers
         }
 
         // POST: ParkedVehicles/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var parkedVehicle = await _context.ParkedVehicle
@@ -448,7 +449,7 @@ namespace Garage3._0.Controllers
             TempData["SuccessMessage"] = $"Vehicle {regId} successfully unparked.";
             return RedirectToAction(nameof(Overview));
         }
-
+        [Authorize]
         // GET: ParkedVehicles/Receipt/5
         public async Task<IActionResult> ReceiptView(int? id)
         {
