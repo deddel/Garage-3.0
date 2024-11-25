@@ -17,26 +17,21 @@
 
 <h1>Parking Spots</h1>
 
-<table class="table">
+<table class="table overview-table">
    <thead>
-     <tr>
+        <tr class="top-list">
             <th>
-                @Html.DisplayNameFor(model => model.SpotId)
+                Parking Spot Number
             </th>
             <th>
-               @*  @Html.DisplayNameFor(model => model.IsAvailable) *@
-               Status
+                @*  @Html.DisplayNameFor(model => model.IsAvailable) *@
+                Status
             </th>
             <th></th>
-    </tr>
+        </tr>
     </thead> 
     <tbody>
 @foreach (var item in Model) {
-  
-
-
-
-
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.SpotId)
